@@ -1,0 +1,505 @@
+// !$*UTF8*$!
+{
+	archiveVersion = 1;
+	classes = {
+	};
+	objectVersion = 54;
+	objects = {
+
+/* Begin PBXBuildFile section */
+		012C3068226FD13B00BADEF9 /* AppDelegate.swift in Sources */ = {isa = PBXBuildFile; fileRef = 012C3067226FD13B00BADEF9 /* AppDelegate.swift */; };
+		012C306D226FD13B00BADEF9 /* Main.storyboard in Resources */ = {isa = PBXBuildFile; fileRef = 012C306B226FD13B00BADEF9 /* Main.storyboard */; };
+		012C306F226FD13B00BADEF9 /* Assets.xcassets in Resources */ = {isa = PBXBuildFile; fileRef = 012C306E226FD13B00BADEF9 /* Assets.xcassets */; };
+		012C3072226FD13B00BADEF9 /* LaunchScreen.storyboard in Resources */ = {isa = PBXBuildFile; fileRef = 012C3070226FD13B00BADEF9 /* LaunchScreen.storyboard */; };
+		3A5E19872606CD0000837A4A /* QorvoDemoViewController.swift in Sources */ = {isa = PBXBuildFile; fileRef = 3A5E19862606CD0000837A4A /* QorvoDemoViewController.swift */; };
+		3A5E19892606CE4B00837A4A /* NearbyInteraction.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 3A5E19882606CE4B00837A4A /* NearbyInteraction.framework */; };
+		3A5E198B2606CE5000837A4A /* CoreBluetooth.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 3A5E198A2606CE5000837A4A /* CoreBluetooth.framework */; };
+		3AB619FE2606C487005014A2 /* BluetoothLECentral.swift in Sources */ = {isa = PBXBuildFile; fileRef = 3AB619FD2606C487005014A2 /* BluetoothLECentral.swift */; };
+		6D4B60E428170EE800D0B1C1 /* DeviceTableViewCell.swift in Sources */ = {isa = PBXBuildFile; fileRef = 6D4B60E328170EE800D0B1C1 /* DeviceTableViewCell.swift */; };
+		6D7A16BB27E2521D00C53B39 /* 3d_arrow.usdz in Resources */ = {isa = PBXBuildFile; fileRef = 6D7A16BA27E2521D00C53B39 /* 3d_arrow.usdz */; };
+		6D84C9FB27875507003E3FFC /* assets in Resources */ = {isa = PBXBuildFile; fileRef = 6D84C9FA27875507003E3FFC /* assets */; };
+		6D85D29E27BFB37800220F5D /* SettingsViewController.swift in Sources */ = {isa = PBXBuildFile; fileRef = 6D85D29D27BFB37800220F5D /* SettingsViewController.swift */; };
+		6D85D2AD27C3A07100220F5D /* Linotype - DINNextLTPro-MediumItalic.otf in Resources */ = {isa = PBXBuildFile; fileRef = 6D85D29F27C3A07000220F5D /* Linotype - DINNextLTPro-MediumItalic.otf */; };
+		6D85D2AE27C3A07100220F5D /* Linotype - DINNextLTPro-Italic.otf in Resources */ = {isa = PBXBuildFile; fileRef = 6D85D2A027C3A07000220F5D /* Linotype - DINNextLTPro-Italic.otf */; };
+		6D85D2AF27C3A07100220F5D /* Linotype - DINNextLTPro-Heavy.otf in Resources */ = {isa = PBXBuildFile; fileRef = 6D85D2A127C3A07000220F5D /* Linotype - DINNextLTPro-Heavy.otf */; };
+		6D85D2B027C3A07100220F5D /* Linotype - DINNextLTPro-BoldItalic.otf in Resources */ = {isa = PBXBuildFile; fileRef = 6D85D2A227C3A07000220F5D /* Linotype - DINNextLTPro-BoldItalic.otf */; };
+		6D85D2B127C3A07100220F5D /* Linotype - DINNextLTPro-Black.otf in Resources */ = {isa = PBXBuildFile; fileRef = 6D85D2A327C3A07000220F5D /* Linotype - DINNextLTPro-Black.otf */; };
+		6D85D2B227C3A07100220F5D /* Linotype - DINNextLTPro-UltraLight.otf in Resources */ = {isa = PBXBuildFile; fileRef = 6D85D2A427C3A07000220F5D /* Linotype - DINNextLTPro-UltraLight.otf */; };
+		6D85D2B327C3A07100220F5D /* Linotype - DINNextLTPro-UltraLightIt.otf in Resources */ = {isa = PBXBuildFile; fileRef = 6D85D2A527C3A07000220F5D /* Linotype - DINNextLTPro-UltraLightIt.otf */; };
+		6D85D2B427C3A07100220F5D /* Linotype - DINNextLTPro-Medium.otf in Resources */ = {isa = PBXBuildFile; fileRef = 6D85D2A627C3A07000220F5D /* Linotype - DINNextLTPro-Medium.otf */; };
+		6D85D2B527C3A07100220F5D /* Linotype - DINNextLTPro-Bold.otf in Resources */ = {isa = PBXBuildFile; fileRef = 6D85D2A727C3A07000220F5D /* Linotype - DINNextLTPro-Bold.otf */; };
+		6D85D2B627C3A07100220F5D /* Linotype - DINNextLTPro-HeavyItalic.otf in Resources */ = {isa = PBXBuildFile; fileRef = 6D85D2A827C3A07000220F5D /* Linotype - DINNextLTPro-HeavyItalic.otf */; };
+		6D85D2B727C3A07100220F5D /* Linotype - DINNextLTPro-BlackItalic.otf in Resources */ = {isa = PBXBuildFile; fileRef = 6D85D2A927C3A07100220F5D /* Linotype - DINNextLTPro-BlackItalic.otf */; };
+		6D85D2B827C3A07100220F5D /* Linotype - DINNextLTPro-Regular.otf in Resources */ = {isa = PBXBuildFile; fileRef = 6D85D2AA27C3A07100220F5D /* Linotype - DINNextLTPro-Regular.otf */; };
+		6D85D2B927C3A07100220F5D /* Linotype - DINNextLTPro-LightItalic.otf in Resources */ = {isa = PBXBuildFile; fileRef = 6D85D2AB27C3A07100220F5D /* Linotype - DINNextLTPro-LightItalic.otf */; };
+		6D85D2BA27C3A07100220F5D /* Linotype - DINNextLTPro-Light.otf in Resources */ = {isa = PBXBuildFile; fileRef = 6D85D2AC27C3A07100220F5D /* Linotype - DINNextLTPro-Light.otf */; };
+		6DD8E87927E8D04D00981050 /* CustomActivityIndicator.swift in Sources */ = {isa = PBXBuildFile; fileRef = 6DD8E87827E8D04D00981050 /* CustomActivityIndicator.swift */; };
+		A9A7C756227E1D6200F2CC59 /* README.md in Resources */ = {isa = PBXBuildFile; fileRef = A9A7C755227E1D6200F2CC59 /* README.md */; };
+/* End PBXBuildFile section */
+
+/* Begin PBXFileReference section */
+		012C3064226FD13B00BADEF9 /* Qorvo NI AR.app */ = {isa = PBXFileReference; explicitFileType = wrapper.application; includeInIndex = 0; path = "Qorvo NI AR.app"; sourceTree = BUILT_PRODUCTS_DIR; };
+		012C3067226FD13B00BADEF9 /* AppDelegate.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = AppDelegate.swift; sourceTree = "<group>"; };
+		012C306C226FD13B00BADEF9 /* Base */ = {isa = PBXFileReference; lastKnownFileType = file.storyboard; name = Base; path = Base.lproj/Main.storyboard; sourceTree = "<group>"; };
+		012C306E226FD13B00BADEF9 /* Assets.xcassets */ = {isa = PBXFileReference; lastKnownFileType = folder.assetcatalog; path = Assets.xcassets; sourceTree = "<group>"; };
+		012C3071226FD13B00BADEF9 /* Base */ = {isa = PBXFileReference; lastKnownFileType = file.storyboard; name = Base; path = Base.lproj/LaunchScreen.storyboard; sourceTree = "<group>"; };
+		012C3073226FD13B00BADEF9 /* Info.plist */ = {isa = PBXFileReference; lastKnownFileType = text.plist.xml; path = Info.plist; sourceTree = "<group>"; };
+		3A5E19862606CD0000837A4A /* QorvoDemoViewController.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = QorvoDemoViewController.swift; sourceTree = "<group>"; };
+		3A5E19882606CE4B00837A4A /* NearbyInteraction.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = NearbyInteraction.framework; path = Platforms/iPhoneOS.platform/Developer/SDKs/iPhoneOS15.0.Internal.sdk/System/Library/Frameworks/NearbyInteraction.framework; sourceTree = DEVELOPER_DIR; };
+		3A5E198A2606CE5000837A4A /* CoreBluetooth.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = CoreBluetooth.framework; path = Platforms/iPhoneOS.platform/Developer/SDKs/iPhoneOS15.0.Internal.sdk/System/Library/Frameworks/CoreBluetooth.framework; sourceTree = DEVELOPER_DIR; };
+		3AB619FD2606C487005014A2 /* BluetoothLECentral.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = BluetoothLECentral.swift; sourceTree = "<group>"; };
+		6D4B60E328170EE800D0B1C1 /* DeviceTableViewCell.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = DeviceTableViewCell.swift; sourceTree = "<group>"; };
+		6D7A16BA27E2521D00C53B39 /* 3d_arrow.usdz */ = {isa = PBXFileReference; lastKnownFileType = file.usdz; path = 3d_arrow.usdz; sourceTree = "<group>"; };
+		6D84C9FA27875507003E3FFC /* assets */ = {isa = PBXFileReference; lastKnownFileType = folder; path = assets; sourceTree = "<group>"; };
+		6D85D29D27BFB37800220F5D /* SettingsViewController.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = SettingsViewController.swift; sourceTree = "<group>"; };
+		6D85D29F27C3A07000220F5D /* Linotype - DINNextLTPro-MediumItalic.otf */ = {isa = PBXFileReference; lastKnownFileType = file; path = "Linotype - DINNextLTPro-MediumItalic.otf"; sourceTree = "<group>"; };
+		6D85D2A027C3A07000220F5D /* Linotype - DINNextLTPro-Italic.otf */ = {isa = PBXFileReference; lastKnownFileType = file; path = "Linotype - DINNextLTPro-Italic.otf"; sourceTree = "<group>"; };
+		6D85D2A127C3A07000220F5D /* Linotype - DINNextLTPro-Heavy.otf */ = {isa = PBXFileReference; lastKnownFileType = file; path = "Linotype - DINNextLTPro-Heavy.otf"; sourceTree = "<group>"; };
+		6D85D2A227C3A07000220F5D /* Linotype - DINNextLTPro-BoldItalic.otf */ = {isa = PBXFileReference; lastKnownFileType = file; path = "Linotype - DINNextLTPro-BoldItalic.otf"; sourceTree = "<group>"; };
+		6D85D2A327C3A07000220F5D /* Linotype - DINNextLTPro-Black.otf */ = {isa = PBXFileReference; lastKnownFileType = file; path = "Linotype - DINNextLTPro-Black.otf"; sourceTree = "<group>"; };
+		6D85D2A427C3A07000220F5D /* Linotype - DINNextLTPro-UltraLight.otf */ = {isa = PBXFileReference; lastKnownFileType = file; path = "Linotype - DINNextLTPro-UltraLight.otf"; sourceTree = "<group>"; };
+		6D85D2A527C3A07000220F5D /* Linotype - DINNextLTPro-UltraLightIt.otf */ = {isa = PBXFileReference; lastKnownFileType = file; path = "Linotype - DINNextLTPro-UltraLightIt.otf"; sourceTree = "<group>"; };
+		6D85D2A627C3A07000220F5D /* Linotype - DINNextLTPro-Medium.otf */ = {isa = PBXFileReference; lastKnownFileType = file; path = "Linotype - DINNextLTPro-Medium.otf"; sourceTree = "<group>"; };
+		6D85D2A727C3A07000220F5D /* Linotype - DINNextLTPro-Bold.otf */ = {isa = PBXFileReference; lastKnownFileType = file; path = "Linotype - DINNextLTPro-Bold.otf"; sourceTree = "<group>"; };
+		6D85D2A827C3A07000220F5D /* Linotype - DINNextLTPro-HeavyItalic.otf */ = {isa = PBXFileReference; lastKnownFileType = file; path = "Linotype - DINNextLTPro-HeavyItalic.otf"; sourceTree = "<group>"; };
+		6D85D2A927C3A07100220F5D /* Linotype - DINNextLTPro-BlackItalic.otf */ = {isa = PBXFileReference; lastKnownFileType = file; path = "Linotype - DINNextLTPro-BlackItalic.otf"; sourceTree = "<group>"; };
+		6D85D2AA27C3A07100220F5D /* Linotype - DINNextLTPro-Regular.otf */ = {isa = PBXFileReference; lastKnownFileType = file; path = "Linotype - DINNextLTPro-Regular.otf"; sourceTree = "<group>"; };
+		6D85D2AB27C3A07100220F5D /* Linotype - DINNextLTPro-LightItalic.otf */ = {isa = PBXFileReference; lastKnownFileType = file; path = "Linotype - DINNextLTPro-LightItalic.otf"; sourceTree = "<group>"; };
+		6D85D2AC27C3A07100220F5D /* Linotype - DINNextLTPro-Light.otf */ = {isa = PBXFileReference; lastKnownFileType = file; path = "Linotype - DINNextLTPro-Light.otf"; sourceTree = "<group>"; };
+		6DD8E87827E8D04D00981050 /* CustomActivityIndicator.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = CustomActivityIndicator.swift; sourceTree = "<group>"; };
+		A9A7C755227E1D6200F2CC59 /* README.md */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = net.daringfireball.markdown; path = README.md; sourceTree = "<group>"; };
+/* End PBXFileReference section */
+
+/* Begin PBXFrameworksBuildPhase section */
+		012C3061226FD13B00BADEF9 /* Frameworks */ = {
+			isa = PBXFrameworksBuildPhase;
+			buildActionMask = 2147483647;
+			files = (
+				3A5E198B2606CE5000837A4A /* CoreBluetooth.framework in Frameworks */,
+				3A5E19892606CE4B00837A4A /* NearbyInteraction.framework in Frameworks */,
+			);
+			runOnlyForDeploymentPostprocessing = 0;
+		};
+/* End PBXFrameworksBuildPhase section */
+
+/* Begin PBXGroup section */
+		012C305B226FD13B00BADEF9 = {
+			isa = PBXGroup;
+			children = (
+				A9A7C755227E1D6200F2CC59 /* README.md */,
+				012C3066226FD13B00BADEF9 /* NINearbyAccessorySample */,
+				012C3065226FD13B00BADEF9 /* Products */,
+				A9FCEFA62293634C008CC0CF /* Frameworks */,
+				D0887E186C8C54F49A98DFAD /* Configuration */,
+			);
+			sourceTree = "<group>";
+		};
+		012C3065226FD13B00BADEF9 /* Products */ = {
+			isa = PBXGroup;
+			children = (
+				012C3064226FD13B00BADEF9 /* Qorvo NI AR.app */,
+			);
+			name = Products;
+			sourceTree = "<group>";
+		};
+		012C3066226FD13B00BADEF9 /* NINearbyAccessorySample */ = {
+			isa = PBXGroup;
+			children = (
+				6DD8E87727E8CFF600981050 /* custom */,
+				6D85D2BB27C3A08600220F5D /* fonts */,
+				6D84C9FA27875507003E3FFC /* assets */,
+				07C9B5FB2685F50E00951A68 /* models */,
+				3A0936E52607ED9D00D072C7 /* BluetoothSupport */,
+				012C3067226FD13B00BADEF9 /* AppDelegate.swift */,
+				3A5E19862606CD0000837A4A /* QorvoDemoViewController.swift */,
+				6D85D29D27BFB37800220F5D /* SettingsViewController.swift */,
+				6D4B60E328170EE800D0B1C1 /* DeviceTableViewCell.swift */,
+				012C306B226FD13B00BADEF9 /* Main.storyboard */,
+				012C306E226FD13B00BADEF9 /* Assets.xcassets */,
+				012C3070226FD13B00BADEF9 /* LaunchScreen.storyboard */,
+				012C3073226FD13B00BADEF9 /* Info.plist */,
+			);
+			path = NINearbyAccessorySample;
+			sourceTree = "<group>";
+		};
+		07C9B5FB2685F50E00951A68 /* models */ = {
+			isa = PBXGroup;
+			children = (
+				6D7A16BA27E2521D00C53B39 /* 3d_arrow.usdz */,
+			);
+			path = models;
+			sourceTree = "<group>";
+		};
+		3A0936E52607ED9D00D072C7 /* BluetoothSupport */ = {
+			isa = PBXGroup;
+			children = (
+				3AB619FD2606C487005014A2 /* BluetoothLECentral.swift */,
+			);
+			path = BluetoothSupport;
+			sourceTree = "<group>";
+		};
+		6D85D2BB27C3A08600220F5D /* fonts */ = {
+			isa = PBXGroup;
+			children = (
+				6D85D2A327C3A07000220F5D /* Linotype - DINNextLTPro-Black.otf */,
+				6D85D2A927C3A07100220F5D /* Linotype - DINNextLTPro-BlackItalic.otf */,
+				6D85D2A727C3A07000220F5D /* Linotype - DINNextLTPro-Bold.otf */,
+				6D85D2A227C3A07000220F5D /* Linotype - DINNextLTPro-BoldItalic.otf */,
+				6D85D2A127C3A07000220F5D /* Linotype - DINNextLTPro-Heavy.otf */,
+				6D85D2A827C3A07000220F5D /* Linotype - DINNextLTPro-HeavyItalic.otf */,
+				6D85D2A027C3A07000220F5D /* Linotype - DINNextLTPro-Italic.otf */,
+				6D85D2AC27C3A07100220F5D /* Linotype - DINNextLTPro-Light.otf */,
+				6D85D2AB27C3A07100220F5D /* Linotype - DINNextLTPro-LightItalic.otf */,
+				6D85D2A627C3A07000220F5D /* Linotype - DINNextLTPro-Medium.otf */,
+				6D85D29F27C3A07000220F5D /* Linotype - DINNextLTPro-MediumItalic.otf */,
+				6D85D2AA27C3A07100220F5D /* Linotype - DINNextLTPro-Regular.otf */,
+				6D85D2A427C3A07000220F5D /* Linotype - DINNextLTPro-UltraLight.otf */,
+				6D85D2A527C3A07000220F5D /* Linotype - DINNextLTPro-UltraLightIt.otf */,
+			);
+			path = fonts;
+			sourceTree = "<group>";
+		};
+		6DD8E87727E8CFF600981050 /* custom */ = {
+			isa = PBXGroup;
+			children = (
+				6DD8E87827E8D04D00981050 /* CustomActivityIndicator.swift */,
+			);
+			path = custom;
+			sourceTree = "<group>";
+		};
+		A9FCEFA62293634C008CC0CF /* Frameworks */ = {
+			isa = PBXGroup;
+			children = (
+				3A5E198A2606CE5000837A4A /* CoreBluetooth.framework */,
+				3A5E19882606CE4B00837A4A /* NearbyInteraction.framework */,
+			);
+			name = Frameworks;
+			sourceTree = "<group>";
+		};
+		D0887E186C8C54F49A98DFAD /* Configuration */ = {
+			isa = PBXGroup;
+			children = (
+			);
+			name = Configuration;
+			sourceTree = "<group>";
+		};
+/* End PBXGroup section */
+
+/* Begin PBXNativeTarget section */
+		012C3063226FD13B00BADEF9 /* Qorvo Nearby Interaction */ = {
+			isa = PBXNativeTarget;
+			buildConfigurationList = 012C3076226FD13B00BADEF9 /* Build configuration list for PBXNativeTarget "Qorvo Nearby Interaction" */;
+			buildPhases = (
+				012C3060226FD13B00BADEF9 /* Sources */,
+				012C3061226FD13B00BADEF9 /* Frameworks */,
+				012C3062226FD13B00BADEF9 /* Resources */,
+			);
+			buildRules = (
+			);
+			dependencies = (
+			);
+			name = "Qorvo Nearby Interaction";
+			productName = BTLETransfer;
+			productReference = 012C3064226FD13B00BADEF9 /* Qorvo NI AR.app */;
+			productType = "com.apple.product-type.application";
+		};
+/* End PBXNativeTarget section */
+
+/* Begin PBXProject section */
+		012C305C226FD13B00BADEF9 /* Project object */ = {
+			isa = PBXProject;
+			attributes = {
+				BuildIndependentTargetsInParallel = YES;
+				LastSwiftUpdateCheck = 1010;
+				LastUpgradeCheck = 1520;
+				ORGANIZATIONNAME = Apple;
+				TargetAttributes = {
+					012C3063226FD13B00BADEF9 = {
+						CreatedOnToolsVersion = 10.1;
+						LastSwiftMigration = 1110;
+					};
+				};
+			};
+			buildConfigurationList = 012C305F226FD13B00BADEF9 /* Build configuration list for PBXProject "NINearbyAccessorySample" */;
+			compatibilityVersion = "Xcode 9.3";
+			developmentRegion = en;
+			hasScannedForEncodings = 0;
+			knownRegions = (
+				en,
+				Base,
+			);
+			mainGroup = 012C305B226FD13B00BADEF9;
+			productRefGroup = 012C3065226FD13B00BADEF9 /* Products */;
+			projectDirPath = "";
+			projectRoot = "";
+			targets = (
+				012C3063226FD13B00BADEF9 /* Qorvo Nearby Interaction */,
+			);
+		};
+/* End PBXProject section */
+
+/* Begin PBXResourcesBuildPhase section */
+		012C3062226FD13B00BADEF9 /* Resources */ = {
+			isa = PBXResourcesBuildPhase;
+			buildActionMask = 2147483647;
+			files = (
+				6D85D2AE27C3A07100220F5D /* Linotype - DINNextLTPro-Italic.otf in Resources */,
+				6D85D2B827C3A07100220F5D /* Linotype - DINNextLTPro-Regular.otf in Resources */,
+				6D85D2AD27C3A07100220F5D /* Linotype - DINNextLTPro-MediumItalic.otf in Resources */,
+				6D85D2B227C3A07100220F5D /* Linotype - DINNextLTPro-UltraLight.otf in Resources */,
+				6D85D2B427C3A07100220F5D /* Linotype - DINNextLTPro-Medium.otf in Resources */,
+				6D85D2AF27C3A07100220F5D /* Linotype - DINNextLTPro-Heavy.otf in Resources */,
+				012C3072226FD13B00BADEF9 /* LaunchScreen.storyboard in Resources */,
+				012C306F226FD13B00BADEF9 /* Assets.xcassets in Resources */,
+				6D85D2B027C3A07100220F5D /* Linotype - DINNextLTPro-BoldItalic.otf in Resources */,
+				6D85D2B527C3A07100220F5D /* Linotype - DINNextLTPro-Bold.otf in Resources */,
+				6D85D2BA27C3A07100220F5D /* Linotype - DINNextLTPro-Light.otf in Resources */,
+				6D85D2B627C3A07100220F5D /* Linotype - DINNextLTPro-HeavyItalic.otf in Resources */,
+				6D84C9FB27875507003E3FFC /* assets in Resources */,
+				6D7A16BB27E2521D00C53B39 /* 3d_arrow.usdz in Resources */,
+				A9A7C756227E1D6200F2CC59 /* README.md in Resources */,
+				6D85D2B127C3A07100220F5D /* Linotype - DINNextLTPro-Black.otf in Resources */,
+				6D85D2B327C3A07100220F5D /* Linotype - DINNextLTPro-UltraLightIt.otf in Resources */,
+				012C306D226FD13B00BADEF9 /* Main.storyboard in Resources */,
+				6D85D2B927C3A07100220F5D /* Linotype - DINNextLTPro-LightItalic.otf in Resources */,
+				6D85D2B727C3A07100220F5D /* Linotype - DINNextLTPro-BlackItalic.otf in Resources */,
+			);
+			runOnlyForDeploymentPostprocessing = 0;
+		};
+/* End PBXResourcesBuildPhase section */
+
+/* Begin PBXSourcesBuildPhase section */
+		012C3060226FD13B00BADEF9 /* Sources */ = {
+			isa = PBXSourcesBuildPhase;
+			buildActionMask = 2147483647;
+			files = (
+				3AB619FE2606C487005014A2 /* BluetoothLECentral.swift in Sources */,
+				6D4B60E428170EE800D0B1C1 /* DeviceTableViewCell.swift in Sources */,
+				3A5E19872606CD0000837A4A /* QorvoDemoViewController.swift in Sources */,
+				012C3068226FD13B00BADEF9 /* AppDelegate.swift in Sources */,
+				6DD8E87927E8D04D00981050 /* CustomActivityIndicator.swift in Sources */,
+				6D85D29E27BFB37800220F5D /* SettingsViewController.swift in Sources */,
+			);
+			runOnlyForDeploymentPostprocessing = 0;
+		};
+/* End PBXSourcesBuildPhase section */
+
+/* Begin PBXVariantGroup section */
+		012C306B226FD13B00BADEF9 /* Main.storyboard */ = {
+			isa = PBXVariantGroup;
+			children = (
+				012C306C226FD13B00BADEF9 /* Base */,
+			);
+			name = Main.storyboard;
+			sourceTree = "<group>";
+		};
+		012C3070226FD13B00BADEF9 /* LaunchScreen.storyboard */ = {
+			isa = PBXVariantGroup;
+			children = (
+				012C3071226FD13B00BADEF9 /* Base */,
+			);
+			name = LaunchScreen.storyboard;
+			sourceTree = "<group>";
+		};
+/* End PBXVariantGroup section */
+
+/* Begin XCBuildConfiguration section */
+		012C3074226FD13B00BADEF9 /* Debug */ = {
+			isa = XCBuildConfiguration;
+			buildSettings = {
+				ALWAYS_SEARCH_USER_PATHS = NO;
+				CLANG_ANALYZER_NONNULL = YES;
+				CLANG_ANALYZER_NUMBER_OBJECT_CONVERSION = YES_AGGRESSIVE;
+				CLANG_CXX_LANGUAGE_STANDARD = "gnu++14";
+				CLANG_CXX_LIBRARY = "libc++";
+				CLANG_ENABLE_MODULES = YES;
+				CLANG_ENABLE_OBJC_ARC = YES;
+				CLANG_ENABLE_OBJC_WEAK = YES;
+				CLANG_WARN_BLOCK_CAPTURE_AUTORELEASING = YES;
+				CLANG_WARN_BOOL_CONVERSION = YES;
+				CLANG_WARN_COMMA = YES;
+				CLANG_WARN_CONSTANT_CONVERSION = YES;
+				CLANG_WARN_DEPRECATED_OBJC_IMPLEMENTATIONS = YES;
+				CLANG_WARN_DIRECT_OBJC_ISA_USAGE = YES_ERROR;
+				CLANG_WARN_DOCUMENTATION_COMMENTS = YES;
+				CLANG_WARN_EMPTY_BODY = YES;
+				CLANG_WARN_ENUM_CONVERSION = YES;
+				CLANG_WARN_INFINITE_RECURSION = YES;
+				CLANG_WARN_INT_CONVERSION = YES;
+				CLANG_WARN_NON_LITERAL_NULL_CONVERSION = YES;
+				CLANG_WARN_OBJC_IMPLICIT_RETAIN_SELF = YES;
+				CLANG_WARN_OBJC_LITERAL_CONVERSION = YES;
+				CLANG_WARN_OBJC_ROOT_CLASS = YES_ERROR;
+				CLANG_WARN_QUOTED_INCLUDE_IN_FRAMEWORK_HEADER = YES;
+				CLANG_WARN_RANGE_LOOP_ANALYSIS = YES;
+				CLANG_WARN_STRICT_PROTOTYPES = YES;
+				CLANG_WARN_SUSPICIOUS_MOVE = YES;
+				CLANG_WARN_UNGUARDED_AVAILABILITY = YES_AGGRESSIVE;
+				CLANG_WARN_UNREACHABLE_CODE = YES;
+				CLANG_WARN__DUPLICATE_METHOD_MATCH = YES;
+				CODE_SIGN_IDENTITY = "iPhone Developer";
+				COPY_PHASE_STRIP = NO;
+				DEBUG_INFORMATION_FORMAT = dwarf;
+				ENABLE_STRICT_OBJC_MSGSEND = YES;
+				ENABLE_TESTABILITY = YES;
+				ENABLE_USER_SCRIPT_SANDBOXING = YES;
+				GCC_C_LANGUAGE_STANDARD = gnu11;
+				GCC_DYNAMIC_NO_PIC = NO;
+				GCC_NO_COMMON_BLOCKS = YES;
+				GCC_OPTIMIZATION_LEVEL = 0;
+				GCC_PREPROCESSOR_DEFINITIONS = (
+					"DEBUG=1",
+					"$(inherited)",
+				);
+				GCC_WARN_64_TO_32_BIT_CONVERSION = YES;
+				GCC_WARN_ABOUT_RETURN_TYPE = YES_ERROR;
+				GCC_WARN_UNDECLARED_SELECTOR = YES;
+				GCC_WARN_UNINITIALIZED_AUTOS = YES_AGGRESSIVE;
+				GCC_WARN_UNUSED_FUNCTION = YES;
+				GCC_WARN_UNUSED_VARIABLE = YES;
+				IPHONEOS_DEPLOYMENT_TARGET = 15.0;
+				MTL_ENABLE_DEBUG_INFO = INCLUDE_SOURCE;
+				MTL_FAST_MATH = YES;
+				ONLY_ACTIVE_ARCH = YES;
+				SDKROOT = iphoneos;
+				SWIFT_ACTIVE_COMPILATION_CONDITIONS = DEBUG;
+				SWIFT_OPTIMIZATION_LEVEL = "-Onone";
+			};
+			name = Debug;
+		};
+		012C3075226FD13B00BADEF9 /* Release */ = {
+			isa = XCBuildConfiguration;
+			buildSettings = {
+				ALWAYS_SEARCH_USER_PATHS = NO;
+				CLANG_ANALYZER_NONNULL = YES;
+				CLANG_ANALYZER_NUMBER_OBJECT_CONVERSION = YES_AGGRESSIVE;
+				CLANG_CXX_LANGUAGE_STANDARD = "gnu++14";
+				CLANG_CXX_LIBRARY = "libc++";
+				CLANG_ENABLE_MODULES = YES;
+				CLANG_ENABLE_OBJC_ARC = YES;
+				CLANG_ENABLE_OBJC_WEAK = YES;
+				CLANG_WARN_BLOCK_CAPTURE_AUTORELEASING = YES;
+				CLANG_WARN_BOOL_CONVERSION = YES;
+				CLANG_WARN_COMMA = YES;
+				CLANG_WARN_CONSTANT_CONVERSION = YES;
+				CLANG_WARN_DEPRECATED_OBJC_IMPLEMENTATIONS = YES;
+				CLANG_WARN_DIRECT_OBJC_ISA_USAGE = YES_ERROR;
+				CLANG_WARN_DOCUMENTATION_COMMENTS = YES;
+				CLANG_WARN_EMPTY_BODY = YES;
+				CLANG_WARN_ENUM_CONVERSION = YES;
+				CLANG_WARN_INFINITE_RECURSION = YES;
+				CLANG_WARN_INT_CONVERSION = YES;
+				CLANG_WARN_NON_LITERAL_NULL_CONVERSION = YES;
+				CLANG_WARN_OBJC_IMPLICIT_RETAIN_SELF = YES;
+				CLANG_WARN_OBJC_LITERAL_CONVERSION = YES;
+				CLANG_WARN_OBJC_ROOT_CLASS = YES_ERROR;
+				CLANG_WARN_QUOTED_INCLUDE_IN_FRAMEWORK_HEADER = YES;
+				CLANG_WARN_RANGE_LOOP_ANALYSIS = YES;
+				CLANG_WARN_STRICT_PROTOTYPES = YES;
+				CLANG_WARN_SUSPICIOUS_MOVE = YES;
+				CLANG_WARN_UNGUARDED_AVAILABILITY = YES_AGGRESSIVE;
+				CLANG_WARN_UNREACHABLE_CODE = YES;
+				CLANG_WARN__DUPLICATE_METHOD_MATCH = YES;
+				CODE_SIGN_IDENTITY = "iPhone Developer";
+				COPY_PHASE_STRIP = NO;
+				DEBUG_INFORMATION_FORMAT = "dwarf-with-dsym";
+				ENABLE_NS_ASSERTIONS = NO;
+				ENABLE_STRICT_OBJC_MSGSEND = YES;
+				ENABLE_USER_SCRIPT_SANDBOXING = YES;
+				GCC_C_LANGUAGE_STANDARD = gnu11;
+				GCC_NO_COMMON_BLOCKS = YES;
+				GCC_WARN_64_TO_32_BIT_CONVERSION = YES;
+				GCC_WARN_ABOUT_RETURN_TYPE = YES_ERROR;
+				GCC_WARN_UNDECLARED_SELECTOR = YES;
+				GCC_WARN_UNINITIALIZED_AUTOS = YES_AGGRESSIVE;
+				GCC_WARN_UNUSED_FUNCTION = YES;
+				GCC_WARN_UNUSED_VARIABLE = YES;
+				IPHONEOS_DEPLOYMENT_TARGET = 15.0;
+				MTL_ENABLE_DEBUG_INFO = NO;
+				MTL_FAST_MATH = YES;
+				SDKROOT = iphoneos;
+				SWIFT_COMPILATION_MODE = wholemodule;
+				SWIFT_OPTIMIZATION_LEVEL = "-O";
+				VALIDATE_PRODUCT = YES;
+			};
+			name = Release;
+		};
+		012C3077226FD13B00BADEF9 /* Debug */ = {
+			isa = XCBuildConfiguration;
+			buildSettings = {
+				ASSETCATALOG_COMPILER_APPICON_NAME = AppIcon;
+				CODE_SIGN_IDENTITY = "iPhone Developer";
+				CURRENT_PROJECT_VERSION = 3;
+				DEVELOPMENT_TEAM = DHX4DPP22G;
+				INFOPLIST_FILE = NINearbyAccessorySample/Info.plist;
+				INFOPLIST_KEY_CFBundleDisplayName = "Qorvo Nearby Interaction";
+				INFOPLIST_KEY_LSApplicationCategoryType = "public.app-category.developer-tools";
+				IPHONEOS_DEPLOYMENT_TARGET = 16.0;
+				LD_RUNPATH_SEARCH_PATHS = (
+					"$(inherited)",
+					"@executable_path/Frameworks",
+				);
+				MARKETING_VERSION = 1.3;
+				PRODUCT_BUNDLE_IDENTIFIER = none;
+				PRODUCT_NAME = "Qorvo NI AR";
+				SDKROOT = iphoneos;
+				SUPPORTED_PLATFORMS = "iphoneos iphonesimulator";
+				SUPPORTS_MACCATALYST = NO;
+				SUPPORTS_MAC_DESIGNED_FOR_IPHONE_IPAD = NO;
+				SWIFT_VERSION = 5.0;
+				TARGETED_DEVICE_FAMILY = 1;
+			};
+			name = Debug;
+		};
+		012C3078226FD13B00BADEF9 /* Release */ = {
+			isa = XCBuildConfiguration;
+			buildSettings = {
+				ASSETCATALOG_COMPILER_APPICON_NAME = AppIcon;
+				CODE_SIGN_IDENTITY = "iPhone Developer";
+				CURRENT_PROJECT_VERSION = 3;
+				DEVELOPMENT_TEAM = DHX4DPP22G;
+				INFOPLIST_FILE = NINearbyAccessorySample/Info.plist;
+				INFOPLIST_KEY_CFBundleDisplayName = "Qorvo Nearby Interaction";
+				INFOPLIST_KEY_LSApplicationCategoryType = "public.app-category.developer-tools";
+				IPHONEOS_DEPLOYMENT_TARGET = 16.0;
+				LD_RUNPATH_SEARCH_PATHS = (
+					"$(inherited)",
+					"@executable_path/Frameworks",
+				);
+				MARKETING_VERSION = 1.3;
+				PRODUCT_BUNDLE_IDENTIFIER = none;
+				PRODUCT_NAME = "Qorvo NI AR";
+				SDKROOT = iphoneos;
+				SUPPORTED_PLATFORMS = "iphoneos iphonesimulator";
+				SUPPORTS_MACCATALYST = NO;
+				SUPPORTS_MAC_DESIGNED_FOR_IPHONE_IPAD = NO;
+				SWIFT_VERSION = 5.0;
+				TARGETED_DEVICE_FAMILY = 1;
+			};
+			name = Release;
+		};
+/* End XCBuildConfiguration section */
+
+/* Begin XCConfigurationList section */
+		012C305F226FD13B00BADEF9 /* Build configuration list for PBXProject "NINearbyAccessorySample" */ = {
+			isa = XCConfigurationList;
+			buildConfigurations = (
+				012C3074226FD13B00BADEF9 /* Debug */,
+				012C3075226FD13B00BADEF9 /* Release */,
+			);
+			defaultConfigurationIsVisible = 0;
+			defaultConfigurationName = Release;
+		};
+		012C3076226FD13B00BADEF9 /* Build configuration list for PBXNativeTarget "Qorvo Nearby Interaction" */ = {
+			isa = XCConfigurationList;
+			buildConfigurations = (
+				012C3077226FD13B00BADEF9 /* Debug */,
+				012C3078226FD13B00BADEF9 /* Release */,
+			);
+			defaultConfigurationIsVisible = 0;
+			defaultConfigurationName = Release;
+		};
+/* End XCConfigurationList section */
+	};
+	rootObject = 012C305C226FD13B00BADEF9 /* Project object */;
+}
