@@ -1,4 +1,4 @@
-23159100270293075
+23155674695202181
 Audio_Module
 Reverb_BTDR-1H
 Digital Reverberation Unit, http://www.belton.co.kr/inc/downfile.php?seq=17&file=pdf (footprint from http://www.uk-electronic.de/PDF/BTDR-1.pdf)
@@ -94737,27 +94737,6 @@ Varistor VF
 0
 2
 2
-opentags_global_lib
-GCT_USB4105-GF-A
-
-
-0
-16
-16
-opentags_global_lib
-SW_JS102011SAQN
-
-
-0
-3
-3
-opentags_global_lib
-XCVR_ESP32-C3-MINI-1-N4
-
-
-0
-61
-61
 opentags_library
 GCT_USB4105-GF-A
 
@@ -94765,6 +94744,13 @@ GCT_USB4105-GF-A
 0
 16
 16
+opentags_library
+SOT95P280X145-5N
+
+
+0
+5
+5
 opentags_library
 SW_JS102011SAQN
 
