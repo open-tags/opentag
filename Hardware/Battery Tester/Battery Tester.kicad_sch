@@ -4,6 +4,11 @@
 	(generator_version "8.0")
 	(uuid "3f456142-c986-4232-8164-99521caea86e")
 	(paper "A4")
+	(title_block
+		(title "Battery Tester")
+		(date "2024-04-16")
+		(rev "Rev A")
+	)
 	(lib_symbols
 		(symbol "Battery_Management:MCP73831-5-OT"
 			(exclude_from_sim no)
@@ -2309,6 +2314,42 @@
 	(no_connect
 		(at 29.21 43.18)
 		(uuid "f82ce76e-7020-4c43-85fc-f9e8c562ffda")
+	)
+	(bus_entry
+		(at -16.51 2.54)
+		(size 2.54 2.54)
+		(stroke
+			(width 0)
+			(type default)
+		)
+		(uuid "3ad23aa1-500d-4b6d-84da-dde32691e374")
+	)
+	(bus_entry
+		(at -15.24 1.27)
+		(size 2.54 2.54)
+		(stroke
+			(width 0)
+			(type default)
+		)
+		(uuid "45726a83-b6dc-4569-9d13-79652a358e67")
+	)
+	(bus_entry
+		(at 102.87 21.59)
+		(size 2.54 2.54)
+		(stroke
+			(width 0)
+			(type default)
+		)
+		(uuid "9644cf3e-4a1c-4f1b-982d-5e0ef15de2b8")
+	)
+	(bus_entry
+		(at 102.87 20.32)
+		(size 2.54 2.54)
+		(stroke
+			(width 0)
+			(type default)
+		)
+		(uuid "ef849565-5b7c-46e2-b576-62b3e17d739b")
 	)
 	(wire
 		(pts
