@@ -479,7 +479,7 @@
       "gencad": "",
       "idf": "",
       "netlist": "",
-      "plot": "",
+      "plot": "battery_tester_exports_v1/",
       "pos_files": "",
       "specctra_dsn": "",
       "step": "",

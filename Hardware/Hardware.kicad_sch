@@ -8775,7 +8775,6 @@
 		(in_bom yes)
 		(on_board yes)
 		(dnp no)
-		(fields_autoplaced yes)
 		(uuid "b30a6579-91e0-42ea-b36e-9b0d5cf462c1")
 		(property "Reference" "U1"
 			(at 157.48 33.02 0)
@@ -8794,7 +8793,7 @@
 			)
 		)
 		(property "Footprint" "opentags_library:XCVR_ESP32-C3-MINI-1-N4"
-			(at 184.15 29.21 0)
+			(at 148.336 78.486 0)
 			(effects
 				(font
 					(size 1.27 1.27)
