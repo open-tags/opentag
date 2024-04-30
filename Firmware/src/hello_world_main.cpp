@@ -30,7 +30,7 @@ void loop() {
   }
   else
   {
-      printf("DEV ID FAILED");
+      printf("DEV ID FAILED\n");
   }
   delay(10000);
 }
