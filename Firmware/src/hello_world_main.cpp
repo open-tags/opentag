@@ -1,98 +1,70 @@
-#include <dw3000.h>
 #include "Arduino.h"
 #include <stdio.h>
-#include <BLEDevice.h>
-#include <BLEServer.h>
-#include <BLEUtils.h>
-#include <BLE2902.h>
+#include <SPI.h>
+#include <dw3000.h>
 
 #define APP_NAME "READ DEV ID\r\n"
-#define SERVICE_UUID "df985029-ffb1-4fa3-a472-e0801b4543e8"
-#define CHARACTERISTIC_UUID "df985029-ffb1-4fa3-a472-e0801b4543e8"
+#define SPI_MOSI 10
+#define SPI_MISO 9
+#define SPI_SCK 8
+#define SPI_CS 0
+#define IRQ 2
 
-// connection pins
-const uint8_t PIN_RST = 0; // reset pin
-const uint8_t PIN_IRQ = 1; // irq pin
-const uint8_t PIN_SS = 7; // spi select pin
-
-BLECharacteristic *pcharacteristic;
-bool deviceConnected = false;
-int txValue = 0;
-
-class tagCallBack: public BLEServerCallbacks {
-  void onConnect (BLEServer *pserver){
-    printf("Connected in callback\n");
-    deviceConnected = true;
-  };
-
-  void onDisconnect (BLEServer *pserver){
-    printf("Disconnected in callback\n");
-    deviceConnected = false;
-    BLEDevice::startAdvertising();
-    printf("Advertising\n");
-  };
-
-};
+// DWM-3000 SPI commands
+#define DWM3000_DEVID_REG 0x00
 
 void setup() {
-  printf(APP_NAME);
+  // Initialize serial communication
+  Serial.begin(115200);
+  while (!Serial) {
+    ; // Wait for serial port to connect
+  }
 
-  /* Configure SPI rate, DW3000 supports up to 38 MHz */
-  /* Reset DW IC */
-  spiBegin(PIN_IRQ, PIN_RST);
-  spiSelect(PIN_SS);
+  pinMode(SPI_MOSI, OUTPUT);
+  pinMode(SPI_MISO, INPUT);
+  pinMode(SPI_SCK, OUTPUT);
+  pinMode(SPI_CS, OUTPUT);
+  pinMode(IRQ, INPUT_PULLUP);
+  attachInterrupt(digitalPinToInterrupt(IRQ), dwt_isr, RISING);
+  spiBegin(2, 1);
+  spiSelect(0);
 
-  delay(2); // Time needed for DW3000 to start up (transition from INIT_RC to IDLE_RC, or could wait for SPIRDY event)
-
-  // Create BLE Device
-  BLEDevice::init("OpenTag");
-
-  // Create BLE Server
-  BLEServer *pServer = BLEDevice::createServer();
-  pServer -> setCallbacks(new tagCallBack());
-
-  // Create BLE Service
-  BLEService *pService = pServer -> createService(SERVICE_UUID);
- 
-  // Setup Characteristics
-  pcharacteristic = pService -> createCharacteristic(CHARACTERISTIC_UUID, BLECharacteristic::PROPERTY_NOTIFY);
-
-  // Notification setup
-  pcharacteristic -> addDescriptor(new BLE2902());
-
-  pService -> start();
-  BLEAdvertising *pAdvertising = BLEDevice::getAdvertising();
-  pAdvertising->addServiceUUID(SERVICE_UUID);
-  pAdvertising->setScanResponse(true);
-  pAdvertising->setMinPreferred(0x06);  // functions that help with iPhone connections issue
-  pAdvertising->setMinPreferred(0x12);
-  BLEDevice::startAdvertising();
-  printf("Characteristic defined! Now you can read it in your phone!\n");
-  printf("Waiting To Connect\n");  
+  // Initialize SPI
+  // SPI.begin();
+  // pinMode(SPI_CS, OUTPUT);
+  // digitalWrite(SPI_CS, HIGH);
 }
 
 void loop() {
-    /* Reads and validate device ID returns DWT_ERROR if it does not match expected else DWT_SUCCESS */
-  // if (dwt_check_dev_id() == DWT_SUCCESS)
-  // {
-  //     printf("DEV ID OK\n");
-  // }
-  // else
-  // {
-  //     printf("DEV ID FAILED");
-  // }
-  if (deviceConnected){
-      printf("Connected\n");
-      txValue = random(-10, 20);
+  // Read the DEVID of the DWM-3000 chip
+  // uint32_t devid = readDWM3000Register(DWM3000_DEVID_REG, 4);
 
-      char txString[8];
-      dtostrf(txValue, 1, 2, txString);
-      pcharacteristic -> setValue(txString);
-      pcharacteristic -> notify();
+  // // Convert the DEVID to characters and print
+  // Serial.print("DWM-3000 DEVID Characters: ");
+  // for (int i = 3; i >= 0; i--) {
+  //   char c = (char)(devid >> (i * 8) & 0xFF); // Extract each byte
+  //   if (c >= 32 && c <= 126) { // Check if the character is printable
+  //     Serial.print(c);
+  //   } else {
+  //     Serial.print("."); // Print a placeholder for non-printable characters
+  //   }
+  // }
+  // Serial.println();
 
-      printf("Sent Value\n");
+  // // Optionally, print the DEVID in hexadecimal format
+  // Serial.print("DWM-3000 DEVID Hex: 0x");
+  // Serial.println(devid, HEX);
+
+  // delay(1000); // Wait for 1 second before reading again
+  if (dwt_check_dev_id() == DWT_SUCCESS) {
+    Serial.println("DEV ID OK\n");
+  } else {
+    Serial.println("DEV ID FAILED\n");
   }
-  delay(1000);
+  delay(10000);
+
 }
+
+
 
 
