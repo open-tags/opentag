@@ -1,219 +1,177 @@
-// #include "dw3000.h"
 
-// #define APP_NAME "SS TWR INIT v1.0"
+#include <stdint.h>
+#include <stdio.h>
+#include <stdlib.h>
+#include <string.h>
 
-// // connection pins
-// const uint8_t PIN_RST = 0; // reset pin
-// const uint8_t PIN_IRQ = 1; // irq pin
-// const uint8_t PIN_SS = 7; // spi select pin
+// #include "EventManager.h"
+#include "cmsis_os.h"
+// #include "defaultTask.h"
+#include "fira_niq.h"
+#include "niq.h"
+#include "nrf_crypto_init.h"
+#include "nrf_crypto_rng.h"
+#include "nrf_log_ctrl.h"
+#include "nrf_drv_clock.h"
+#include "reporter.h"
+#include "rtls_version.h"
+#include "util.h"
 
-// /* Default communication configuration. We use default non-STS DW mode. */
-// static dwt_config_t config = {
-//         5,               /* Channel number. */
-//         DWT_PLEN_128,    /* Preamble length. Used in TX only. */
-//         DWT_PAC8,        /* Preamble acquisition chunk size. Used in RX only. */
-//         9,               /* TX preamble code. Used in TX only. */
-//         9,               /* RX preamble code. Used in RX only. */
-//         1,               /* 0 to use standard 8 symbol SFD, 1 to use non-standard 8 symbol, 2 for non-standard 16 symbol SFD and 3 for 4z 8 symbol SDF type */
-//         DWT_BR_6M8,      /* Data rate. */
-//         DWT_PHRMODE_STD, /* PHY header mode. */
-//         DWT_PHRRATE_STD, /* PHY header rate. */
-//         (129 + 8 - 8),   /* SFD timeout (preamble length + 1 + SFD length - PAC size). Used in RX only. */
-//         DWT_STS_MODE_OFF, /* STS disabled */
-//         DWT_STS_LEN_64,/* STS length see allowed values in Enum dwt_sts_lengths_e */
-//         DWT_PDOA_M0      /* PDOA mode off */
-// };
+#include "HAL_uwb.h"
+#include "deca_dbg.h"
+#include "niq.h"
+#include "thisBoard.h"
+#include "uwbmac.h"
+#ifdef SOFTDEVICE_PRESENT
+#include "nrf_sdh.h"
+#endif
 
-// /* Inter-ranging delay period, in milliseconds. */
-// #define RNG_DELAY_MS 1000
+#ifndef ACCESSORY_RANGING_ROLE
+#define ACCESSORY_RANGING_ROLE (1) /**< Responder 0, Initiator 1 */
+#endif
 
-// /* Default antenna delay values for 64 MHz PRF. See NOTE 2 below. */
-// #define TX_ANT_DLY 16385
-// #define RX_ANT_DLY 16385
+extern void ble_init(char *gap_name);
+#if NRF_LOG_ENABLED
+void init_logger_thread();
+#endif // NRF_LOG_ENABLED
 
-// /* Frames used in the ranging process. See NOTE 3 below. */
-// static uint8_t tx_poll_msg[] = {0x41, 0x88, 0, 0xCA, 0xDE, 'W', 'A', 'V', 'E', 0xE0, 0, 0};
-// static uint8_t rx_resp_msg[] = {0x41, 0x88, 0, 0xCA, 0xDE, 'V', 'E', 'W', 'A', 0xE1, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0};
-// /* Length of the common part of the message (up to and including the function code, see NOTE 3 below). */
-// #define ALL_MSG_COMMON_LEN 10
-// /* Indexes to access some of the fields in the frames defined above. */
-// #define ALL_MSG_SN_IDX 2
-// #define RESP_MSG_POLL_RX_TS_IDX 10
-// #define RESP_MSG_RESP_TX_TS_IDX 14
-// #define RESP_MSG_TS_LEN 4
-// /* Frame sequence number, incremented after each transmission. */
-// static uint8_t frame_seq_nb = 0;
+extern const char ApplicationName[]; /**< Name of Application release. */
+extern const char OsName[];
+extern const char BoardName[]; /**< Name of Target. Indicated in the advertising data. */
 
-// /* Buffer to store received response message.
-//  * Its size is adjusted to longest frame that this example code is supposed to handle. */
-// #define RX_BUF_LEN 20
-// static uint8_t rx_buffer[RX_BUF_LEN];
+#define DEAD_BEEF 0xDEADBEEF /**< Value used as error code on stack dump, can be used to identify stack location on stack unwind. */
 
-// /* Hold copy of status register state here for reference so that it can be examined at a debug breakpoint. */
-// static uint32_t status_reg = 0;
+#if NRF_LOG_ENABLED
+static TaskHandle_t m_logger_thread; /**< Definition of Logger thread. */
+#endif
 
-// /* Delay between frames, in UWB microseconds. See NOTE 1 below. */
-// #ifdef RPI_BUILD
-// #define POLL_TX_TO_RESP_RX_DLY_UUS 240
-// #endif //RPI_BUILD
-// #ifdef STM32F429xx
-// #define POLL_TX_TO_RESP_RX_DLY_UUS 240
-// #endif //STM32F429xx
-// #ifdef NRF52840_XXAA
-// #define POLL_TX_TO_RESP_RX_DLY_UUS 240
-// #endif //NRF52840_XXAA
-// /* Receive response timeout. See NOTE 5 below. */
-// #ifdef RPI_BUILD
-// #define RESP_RX_TIMEOUT_UUS 270
-// #endif //RPI_BUILD
-// #ifdef STM32F429xx
-// #define RESP_RX_TIMEOUT_UUS 210
-// #endif //STM32F429xx
-// #ifdef NRF52840_XXAA
-// #define RESP_RX_TIMEOUT_UUS 400
-// #endif //NRF52840_XXAA
-
-// #define POLL_TX_TO_RESP_RX_DLY_UUS 240
-// #define RESP_RX_TIMEOUT_UUS 0
+/**@brief Callback function for asserts in the SoftDevice.
+ *
+ * @details This function will be called in case of an assert in the SoftDevice.
+ *
+ * @warning This handler is an example only and does not fit a final product. You need to analyze
+ *          how your product is supposed to react in case of Assert.
+ * @warning On assert from the SoftDevice, the system can only recover on reset.
+ *
+ * @param[in]   line_num   Line number of the failing ASSERT call.
+ * @param[in]   file_name  File name of the failing ASSERT call.
+ */
+void assert_nrf_callback(uint16_t line_num, const uint8_t *p_file_name) {
+    app_error_handler(DEAD_BEEF, line_num, p_file_name);
+}
 
 
-// /* Hold copies of computed time of flight and distance here for reference so that it can be examined at a debug breakpoint. */
-// static double tof;
-// static double distance;
+/**@brief Function for initializing the clock.
+ */
+static void clock_init(void) {
+    ret_code_t err_code = nrf_drv_clock_init();
+    APP_ERROR_CHECK(err_code);
+}
 
-// /* Values for the PG_DELAY and TX_POWER registers reflect the bandwidth and power of the spectrum at the current
-//  * temperature. These values can be calibrated prior to taking reference measurements. See NOTE 2 below. */
-// extern dwt_txconfig_t txconfig_options;
 
-// void setup() {
-//   UART_init();
-//   test_run_info((unsigned char *)APP_NAME);
+/**@brief Function for application main entry.
+ */
+int main(void) {
+    // Initialize modules.
+    clock_init();
+    reporter_instance.init();
 
-//   /* Configure SPI rate, DW3000 supports up to 38 MHz */
-//   /* Reset DW IC */
-//   spiBegin(PIN_IRQ, PIN_RST);
-//   spiSelect(PIN_SS);
+    hal_uwb.mcu_sleep_config();
 
-//   delay(2); // Time needed for DW3000 to start up (transition from INIT_RC to IDLE_RC, or could wait for SPIRDY event)
+#if NRF_LOG_ENABLED
+    init_logger_thread();
+#endif
 
-//   while (!dwt_checkidlerc()) // Need to make sure DW IC is in IDLE_RC before proceeding 
-//   {
-//     UART_puts("IDLE FAILED\r\n");
-//     while (1) ;
-//   }
+    // Accessory Nearby Interaction Initialization
+    niq_init(ResumeUwbTasks, StopUwbTask, (const void *)nrf_crypto_init,
+             (const void *)nrf_crypto_uninit,
+             (const void *)nrf_crypto_rng_vector_generate);
 
-//   if (dwt_initialise(DWT_DW_INIT) == DWT_ERROR)
-//   {
-//     UART_puts("INIT FAILED\r\n");
-//     while (1) ;
-//   }
+    // Accessory instructed to act as a Responder or Initiator
+    niq_set_ranging_role(ACCESSORY_RANGING_ROLE);
 
-//   // Enabling LEDs here for debug so that for each TX the D1 LED will flash on DW3000 red eval-shield boards.
-//   dwt_setleds(DWT_LEDS_ENABLE | DWT_LEDS_INIT_BLINK);
+    // Create Default task: it responsible for WDT and starting of "applications"
+    AppConfigInit(); /**< load the RAM Configuration parameters from NVM block */
 
-//   /* Configure DW IC. See NOTE 6 below. */
-//   if(dwt_configure(&config) == DWT_ERROR) // if the dwt_configure returns DWT_ERROR either the PLL or RX calibration has failed the host should reset the device
-//   {
-//     printf("CONFIG FAILED\r\n");
-//     while (1) ;
-//   }
+    // Start BLE 
+    char advertising_name[32];
 
-//     /* Configure the TX spectrum parameters (power, PG delay and PG count) */
-//     dwt_configuretxrf(&txconfig_options);
+    snprintf(advertising_name, sizeof(advertising_name), "%s (%08X)", (char*)BoardName, (unsigned int)NRF_FICR->DEVICEADDR[0]);
+    ble_init(advertising_name);
 
-//     /* Apply default antenna delay value. See NOTE 2 below. */
-//     dwt_setrxantennadelay(RX_ANT_DLY);
-//     dwt_settxantennadelay(TX_ANT_DLY);
+    EventManagerInit();
+    BoardInit();
+    if (uwb_init() != DWT_SUCCESS) {
+        APP_ERROR_HANDLER(NRF_ERROR_RESOURCES);
+    }
+    DefaultTaskInit();
+   
+    // Driver version is available after probing of the DW chip
+    const char ver[]    = FULL_VERSION;
+    const char *drv_ver = dwt_version_string();
+    const char *mac_ver = uwbmac_get_version();
 
-//     /* Set expected response's delay and timeout. See NOTE 1 and 5 below.
-//      * As this example only handles one incoming frame with always the same delay and timeout, those values can be set here once for all. */
-//     dwt_setrxaftertxdelay(POLL_TX_TO_RESP_RX_DLY_UUS);
-//     dwt_setrxtimeout(RESP_RX_TIMEOUT_UUS);
+    char str[256];
+    int sz;
 
-//     /* Next can enable TX/RX states output on GPIOs 5 and 6 to help debug, and also TX/RX LEDs
-//      * Note, in real low power applications the LEDs should not be used. */
-//     dwt_setlnapamode(DWT_LNA_ENABLE | DWT_PA_ENABLE);
-// }
+    sz  = sprintf(str, "Application: %s\r\n", ApplicationName);
+    sz += sprintf(&str[sz], "BOARD: %s\r\n", BoardName);
+    sz += sprintf(&str[sz], "OS: %s\r\n", OsName);
+    sz += sprintf(&str[sz], "Version: %s\r\n", ver);
+    sz += sprintf(&str[sz], "%s\r\n", drv_ver);
+    sz += sprintf(&str[sz], "MAC: %s\r\n", mac_ver);
+    sz += sprintf(&str[sz], "ACCESSORY_RANGING_ROLE: %s\r\n", (ACCESSORY_RANGING_ROLE) ? "Initiator" : "Responder");
+    reporter_instance.print(str, sz);
 
-// void loop() {
-//         /* Write frame data to DW IC and prepare transmission. See NOTE 7 below. */
-//         tx_poll_msg[ALL_MSG_SN_IDX] = frame_seq_nb;
-//         dwt_write32bitreg(SYS_STATUS_ID, SYS_STATUS_TXFRS_BIT_MASK);
-//         dwt_writetxdata(sizeof(tx_poll_msg), tx_poll_msg, 0); /* Zero offset in TX buffer. */
-//         dwt_writetxfctrl(sizeof(tx_poll_msg), 0, 1); /* Zero offset in TX buffer, ranging. */
+    // Start FreeRTOS scheduler.
+    osKernelStart();
 
-//         printf("Transmission Started");
+    for (;;) {
+        APP_ERROR_HANDLER(NRF_ERROR_FORBIDDEN);
+    }
+}
 
-//         /* Start transmission, indicating that a response is expected so that reception is enabled automatically after the frame is sent and the delay
-//          * set by dwt_setrxaftertxdelay() has elapsed. */
-//         dwt_starttx(DWT_START_TX_IMMEDIATE | DWT_RESPONSE_EXPECTED);
 
-//         printf("Transmission Successful");
+#if NRF_LOG_ENABLED
+/**@brief Thread for handling the logger.
+ *
+ * @details This thread is responsible for processing log entries if logs are
+ * deferred. Thread flushes all log entries and suspends. It is resumed by idle
+ * task hook.
+ *
+ * @param[in]   arg   Pointer used for passing some arbitrary information
+ * (context) from the osThreadCreate() call to the thread.
+ */
+static void logger_thread(void *arg) {
+    UNUSED_PARAMETER(arg);
 
-//         /* We assume that the transmission is achieved correctly, poll for reception of a frame or error/timeout. See NOTE 8 below. */
-//         while (!((status_reg = dwt_read32bitreg(SYS_STATUS_ID)) & (SYS_STATUS_RXFCG_BIT_MASK | SYS_STATUS_ALL_RX_TO | SYS_STATUS_ALL_RX_ERR)))
-//         { };
+    while (1) {
+        NRF_LOG_FLUSH();
 
-//         printf("%02X\n", SYS_STATUS_RXFCG_BIT_MASK | SYS_STATUS_ALL_RX_TO | SYS_STATUS_ALL_RX_ERR);
-//         printf("Status Register: %02X\n", status_reg);
+        vTaskSuspend(NULL); // Suspend myself
+    }
+}
+void init_logger_thread() {
+    // Logging task is only required if NRF_LOG module is in use
+    if (pdPASS != xTaskCreate(logger_thread, "logger", 256, NULL, 1, &m_logger_thread)) {
+        APP_ERROR_HANDLER(NRF_ERROR_NO_MEM);
+    }
+}
 
-//         /* Increment frame sequence number after transmission of the poll message (modulo 256). */
-//         frame_seq_nb++;
+void vApplicationIdleHook(void) {
+#ifdef SOFTDEVICE_PRESENT
+            if (nrf_sdh_is_enabled())
+            {
+                uint32_t err_code = sd_app_evt_wait();
+                APP_ERROR_CHECK(err_code);
+            }
+            else
+#endif
+            {
+               __WFI();
+            }
 
-//         if (status_reg & SYS_STATUS_RXFCG_BIT_MASK)
-//         {
-//             printf("Here");
-//             uint32_t frame_len;
+    vTaskResume(m_logger_thread);
+}
 
-//             /* Clear good RX frame event in the DW IC status register. */
-//             dwt_write32bitreg(SYS_STATUS_ID, SYS_STATUS_RXFCG_BIT_MASK);
-
-//             /* A frame has been received, read it into the local buffer. */
-//             frame_len = dwt_read32bitreg(RX_FINFO_ID) & RXFLEN_MASK;
-//             if (frame_len <= sizeof(rx_buffer))
-//             {
-//                 dwt_readrxdata(rx_buffer, frame_len, 0);
-
-//                 /* Check that the frame is the expected response from the companion "SS TWR responder" example.
-//                  * As the sequence number field of the frame is not relevant, it is cleared to simplify the validation of the frame. */
-//                 rx_buffer[ALL_MSG_SN_IDX] = 0;
-//                 if (memcmp(rx_buffer, rx_resp_msg, ALL_MSG_COMMON_LEN) == 0)
-//                 {
-//                     uint32_t poll_tx_ts, resp_rx_ts, poll_rx_ts, resp_tx_ts;
-//                     int32_t rtd_init, rtd_resp;
-//                     float clockOffsetRatio ;
-
-//                     /* Retrieve poll transmission and response reception timestamps. See NOTE 9 below. */
-//                     poll_tx_ts = dwt_readtxtimestamplo32();
-//                     resp_rx_ts = dwt_readrxtimestamplo32();
-
-//                     /* Read carrier integrator value and calculate clock offset ratio. See NOTE 11 below. */
-//                     clockOffsetRatio = ((float)dwt_readclockoffset()) / (uint32_t)(1<<26);
-
-//                     /* Get timestamps embedded in response message. */
-//                     resp_msg_get_ts(&rx_buffer[RESP_MSG_POLL_RX_TS_IDX], &poll_rx_ts);
-//                     resp_msg_get_ts(&rx_buffer[RESP_MSG_RESP_TX_TS_IDX], &resp_tx_ts);
-
-//                     /* Compute time of flight and distance, using clock offset ratio to correct for differing local and remote clock rates */
-//                     rtd_init = resp_rx_ts - poll_tx_ts;
-//                     rtd_resp = resp_tx_ts - poll_rx_ts;
-
-//                     tof = ((rtd_init - rtd_resp * (1 - clockOffsetRatio)) / 2.0) * DWT_TIME_UNITS;
-//                     distance = tof * SPEED_OF_LIGHT;
-
-//                     /* Display computed distance on LCD. */
-//                     snprintf(dist_str, sizeof(dist_str), "DIST: %3.2f m", distance);
-//                     test_run_info((unsigned char *)dist_str);
-//                 }
-//             }
-//         }
-//         else
-//         {
-//             /* Clear RX error/timeout events in the DW IC status register. */
-//             dwt_write32bitreg(SYS_STATUS_ID, SYS_STATUS_ALL_RX_TO | SYS_STATUS_ALL_RX_ERR);
-//             printf("Timed out!!!\n");
-//         }
-
-//         /* Execute a delay between ranging exchanges. */
-//         Sleep(RNG_DELAY_MS);
-// }
+#endif // NRF_LOG_ENABLED

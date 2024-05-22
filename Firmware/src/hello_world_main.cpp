@@ -8,7 +8,8 @@
 #define SPI_MISO 9
 #define SPI_SCK 8
 #define SPI_CS 0
-#define IRQ 2
+#define PIN_IRQ 2
+#define PIN_RST 1
 
 // DWM-3000 SPI commands
 #define DWM3000_DEVID_REG 0x00
@@ -24,9 +25,9 @@ void setup() {
   pinMode(SPI_MISO, INPUT);
   pinMode(SPI_SCK, OUTPUT);
   pinMode(SPI_CS, OUTPUT);
-  pinMode(IRQ, INPUT_PULLUP);
-  attachInterrupt(digitalPinToInterrupt(IRQ), dwt_isr, RISING);
-  spiBegin(2, 1);
+  pinMode(PIN_IRQ, INPUT_PULLUP);
+  attachInterrupt(digitalPinToInterrupt(PIN_IRQ), dwt_isr, RISING);
+  spiBegin(PIN_IRQ, PIN_RST);
   spiSelect(0);
 
   // Initialize SPI
@@ -36,32 +37,6 @@ void setup() {
 }
 
 void loop() {
-  // Read the DEVID of the DWM-3000 chip
-  // uint32_t devid = readDWM3000Register(DWM3000_DEVID_REG, 4);
-
-  // // Convert the DEVID to characters and print
-  // Serial.print("DWM-3000 DEVID Characters: ");
-  // for (int i = 3; i >= 0; i--) {
-  //   char c = (char)(devid >> (i * 8) & 0xFF); // Extract each byte
-  //   if (c >= 32 && c <= 126) { // Check if the character is printable
-  //     Serial.print(c);
-  //   } else {
-  //     Serial.print("."); // Print a placeholder for non-printable characters
-  //   }
-  // }
-  // Serial.println();
-
-  // // Optionally, print the DEVID in hexadecimal format
-  // Serial.print("DWM-3000 DEVID Hex: 0x");
-  // Serial.println(devid, HEX);
-
-  // delay(1000); // Wait for 1 second before reading again
-  if (dwt_check_dev_id() == DWT_SUCCESS) {
-    Serial.println("DEV ID OK\n");
-  } else {
-    Serial.println("DEV ID FAILED\n");
-  }
-  delay(10000);
 
 }
 
