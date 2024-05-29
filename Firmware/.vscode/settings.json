@@ -9,6 +9,18 @@
         "functional": "cpp",
         "tuple": "cpp",
         "type_traits": "cpp",
-        "utility": "cpp"
+        "utility": "cpp",
+        "nrf_nvic.h": "c",
+        "nrf.h": "c",
+        "ble.h": "c",
+        "ble_hci.h": "c",
+        "ble_qnis.h": "c",
+        "ble_anis.h": "c",
+        "ble_srv_common.h": "c",
+        "app_ble.h": "c",
+        "nrf_crypto_init.h": "c",
+        "ble_conn_state.h": "c",
+        "nrf_ble_qwr.h": "c",
+        "nrf_crypto_mem.h": "c"
     }
 }
