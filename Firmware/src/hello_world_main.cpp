@@ -284,6 +284,9 @@ void ResumeUwbTasks(void)
   dwt_settxantennadelay(TX_ANT_DLY);
 
   dwt_enablespicrccheck(DWT_SPI_CRC_MODE_NO, spi_rd_err_cb);
+
+  // TODO: Replace code after this to switch is with Tx/Rx
+  // Don't change other shit pls
   dwt_setrxaftertxdelay(POLL_TX_TO_RESP_RX_DLY_UUS);
   dwt_setrxtimeout(RESP_RX_TIMEOUT_UUS);
 
