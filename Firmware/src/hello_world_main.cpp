@@ -18,35 +18,88 @@ extern "C" {
 #define RST 1 
 #define IRQ 2
 
+#define TX_ANT_DLY 16385
+#define RX_ANT_DLY 16385
+
 // DWM-3000 SPI commands
 #define DWM3000_DEVID_REG 0x00
+
+/* Frames used in the ranging process. See NOTE 3 below. */
+static uint8_t tx_poll_msg[] = {0x41, 0x88, 0, 0xCA, 0xDE, 'W', 'A', 'V', 'E', 0xE0, 0, 0};
+static uint8_t rx_resp_msg[] = {0x41, 0x88, 0, 0xCA, 0xDE, 'V', 'E', 'W', 'A', 0xE1, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0};
+/* Length of the common part of the message (up to and including the function code, see NOTE 3 below). */
+#define ALL_MSG_COMMON_LEN 10
+/* Indexes to access some of the fields in the frames defined above. */
+#define ALL_MSG_SN_IDX 2
+#define RESP_MSG_POLL_RX_TS_IDX 10
+#define RESP_MSG_RESP_TX_TS_IDX 14
+#define RESP_MSG_TS_LEN 4
+/* Frame sequence number, incremented after each transmission. */
+static uint8_t frame_seq_nb = 0;
+
+/* Buffer to store received response message.
+ * Its size is adjusted to longest frame that this example code is supposed to handle. */
+#define RX_BUF_LEN 20
+static uint8_t rx_buffer[RX_BUF_LEN];
+
+/* Hold copy of status register state here for reference so that it can be examined at a debug breakpoint. */
+static uint32_t status_reg = 0;
+
+/* Delay between frames, in UWB microseconds. See NOTE 1 below. */
+#ifdef RPI_BUILD
+#define POLL_TX_TO_RESP_RX_DLY_UUS 240
+#endif //RPI_BUILD
+#ifdef STM32F429xx
+#define POLL_TX_TO_RESP_RX_DLY_UUS 240
+#endif //STM32F429xx
+#ifdef NRF52840_XXAA
+#define POLL_TX_TO_RESP_RX_DLY_UUS 240
+#endif //NRF52840_XXAA
+/* Receive response timeout. See NOTE 5 below. */
+#ifdef RPI_BUILD
+#define RESP_RX_TIMEOUT_UUS 270
+#endif //RPI_BUILD
+#ifdef STM32F429xx
+#define RESP_RX_TIMEOUT_UUS 210
+#endif //STM32F429xx
+#ifdef NRF52840_XXAA
+#define RESP_RX_TIMEOUT_UUS 400
+#endif //NRF52840_XXAA
+
+#define POLL_TX_TO_RESP_RX_DLY_UUS 240
+#define RESP_RX_TIMEOUT_UUS 0
+
+
+/* Hold copies of computed time of flight and distance here for reference so that it can be examined at a debug breakpoint. */
+static double tof;
+static double distance;
 
 // BLEService customService("180C"); // Custom BLE Service
 // BLECharacteristic txCharacteristic("2A56", BLEWrite, 20); // Tx Characteristic
 // BLECharacteristic rxCharacteristic("2A57", BLERead | BLENotify, 20); // Rx Characteristic
 
 // BLE Service
-BLEService myService("6E400001-B5A3-F393-E0A9-E50E24DCCA9E");
+BLEService myService("26b886e0-0bab-4d96-a8f3-f44fe442a700");
 BLEService ANIService("48fe3e40-0817-4bb2-8633-3073689c2dba");
 
 static uint8_t accessory_config_data_buffer[sizeof(struct AccessoryConfigurationData)];
 static uint8_t accessory_config_data_length;
 
 fira_device_configure_t fira_config;
+dwt_config_t * dwt_config;
+extern dwt_txconfig_t txconfig_options;
 
 // BLE Characteristic for Tx
 BLECharacteristic myTxChar("6E400002-B5A3-F393-E0A9-E50E24DCCA9E", BLEWrite | BLENotify | BLEIndicate, 38, true);
 BLECharacteristic myRxChar("6E400002-B5A3-F393-E0A9-E50E24DCCA9E", BLERead);
 
-BLECharacteristic ACD("95e8d9d5-d8ef-4721-9a4e-807375f53328", BLEWrite);
+BLECharacteristic ACD("95e8d9d5-d8ef-4721-9a4e-807375f53328", BLERead);
 
 void onDataWritten(uint16_t conn_hdl, BLECharacteristic* chr, uint8_t* data, uint16_t len);
 
+volatile uint8_t start_TWR = 0;
+
 static void send_ble_data(uint8_t * buffer, uint16_t data_len){
-  Serial.print("Length before calling: ");
-  Serial.println(data_len);
-  Serial.print("MaxLen is: ");
-  Serial.println(myTxChar.getMaxLen());
   bool success = myTxChar.notify(buffer, data_len);
   if (success) {
     Serial.println("Data sent successfully");
@@ -82,6 +135,18 @@ void print_buffer_binary(uint8_t* buffer, size_t length) {
         Serial.print(" ");
     }
     Serial.println();
+}
+
+void print_binary(uint32_t value) {
+    char binary_str[33]; // 32 bits + null terminator
+    binary_str[32] = '\0'; // Null terminator
+
+    for (int i = 31; i >= 0; --i) {
+        binary_str[i] = (value & 1) ? '1' : '0';
+        value >>= 1;
+    }
+
+    Serial.println(binary_str);
 }
 
 static void send_accessory_config_data() {
@@ -120,47 +185,57 @@ static void send_accessory_config_data() {
     // UWB middleware responsibility
     niq_populate_accessory_uwb_config_data(&config->uwbConfigData, &config->uwbConfigDataLength);
 
-    //set_accessory_uwb_config_data(packet->payloxad);
-    Serial.println((uint8_t)config->uwbConfigDataLength);
+    // //set_accessory_uwb_config_data(packet->payloxad);
+    // Serial.println((uint8_t)config->uwbConfigDataLength);
 
-    Serial.println("Buffer in binary format (little-endian):");
+    // Serial.println("Buffer in binary format (little-endian):");
 
-    // Print the message ID
-    Serial.println("Message ID");
-    print_buffer_binary(&packet->message_id, 1);
+    // // Print the message ID
+    // Serial.println("Message ID");
+    // print_buffer_binary(&packet->message_id, 1);
 
-    // Print the rest of the buffer in little-endian format
-    Serial.println("Major Version");
-    uint8_t* data_ptr = (uint8_t*)&config->majorVersion;
-    for (int i = 0; i < sizeof(config->majorVersion); ++i) {
-        print_buffer_binary(&data_ptr[i], 1);
-    }
-
-    Serial.println("Minor Version");
-    data_ptr = (uint8_t*)&config->minorVersion;
-    for (int i = 0; i < sizeof(config->minorVersion); ++i) {
-        print_buffer_binary(&data_ptr[i], 1);
-    }
-
-
-    Serial.println("PUR");
-    data_ptr = &config->preferredUpdateRate;
-    print_buffer_binary(data_ptr, 1);
-
-    // for (int i = 0; i < sizeof(config->rfu); ++i) {
-    //     print_buffer_binary(&config->rfu[i], 1);
+    // // Print the rest of the buffer in little-endian format
+    // Serial.println("Major Version");
+    // uint8_t* data_ptr = (uint8_t*)&config->majorVersion;
+    // for (int i = 0; i < sizeof(config->majorVersion); ++i) {
+    //     print_buffer_binary(&data_ptr[i], 1);
     // }
 
-    Serial.println("uwbConfigDataLength");
-    data_ptr = &config->uwbConfigDataLength;
-    print_buffer_binary(data_ptr, 1);
+    // Serial.println("Minor Version");
+    // data_ptr = (uint8_t*)&config->minorVersion;
+    // for (int i = 0; i < sizeof(config->minorVersion); ++i) {
+    //     print_buffer_binary(&data_ptr[i], 1);
+    // }
 
-    Serial.println("uwbConfigData");
-    for (int i = 0; i < config->uwbConfigDataLength; ++i) {
-        print_buffer_binary(&config->uwbConfigData[i], 1);
+
+    // Serial.println("PUR");
+    // data_ptr = &config->preferredUpdateRate;
+    // print_buffer_binary(data_ptr, 1);
+
+    // // for (int i = 0; i < sizeof(config->rfu); ++i) {
+    // //     print_buffer_binary(&config->rfu[i], 1);
+    // // }
+
+    // Serial.println("uwbConfigDataLength");
+    // data_ptr = &config->uwbConfigDataLength;
+    // print_buffer_binary(data_ptr, 1);
+
+    // Serial.println("uwbConfigData");
+    // for (int i = 0; i < config->uwbConfigDataLength; ++i) {
+    //     print_buffer_binary(&config->uwbConfigData[i], 1);
+    // }
+    
+    if (accessory_config_data_length <= sizeof(accessory_config_data_buffer))
+    {
+      memcpy(accessory_config_data_buffer, packet -> payload, accessory_config_data_length);
     }
+    ACD.setBuffer(accessory_config_data_buffer, (uint16_t)accessory_config_data_length);
 
     send_ble_data(buffer, (uint16_t)(config->uwbConfigDataLength + ACCESSORY_CONFIGURATION_DATA_FIX_LEN + 1));
+}
+
+void spi_rd_err_cb(){
+  Serial.print("Bruhhh");
 }
 
 /*
@@ -168,7 +243,123 @@ static void send_accessory_config_data() {
  */
 void ResumeUwbTasks(void)
 {
-    Serial.println("Started");
+    // Serial.println("Started");
+    // Serial.print("Role");
+    // Serial.println(fira_config.role);
+    // Serial.print("Channel Number");
+    // Serial.println(fira_config.Channel_Number);
+    // Serial.print("PreAmble");
+    // Serial.println(fira_config.Preamble_Code);
+    // Serial.print("Sfd");
+    // Serial.println(fira_config.SP0_PHY_Set);
+
+    uint8_t sfd_id = (fira_config.SP0_PHY_Set == 2)?(2):(0);
+    dwt_config->chan = fira_config.Channel_Number;
+    dwt_config->sfdType = (sfd_id == 0) ? DWT_SFD_IEEE_4A : DWT_SFD_IEEE_4Z; //TBD: maybe_flawed?
+    dwt_config->txCode = fira_config.Preamble_Code;
+    dwt_config->rxCode = fira_config.Preamble_Code;
+    dwt_config->txPreambLength = DWT_PLEN_64;
+    dwt_config->rxPAC = DWT_PAC8;
+    dwt_config->dataRate = DWT_BR_6M8;
+    dwt_config->phrMode = DWT_PHRMODE_STD;
+    dwt_config->phrRate = DWT_PHRRATE_STD;
+    dwt_config->sfdTO = (69  + 8 - 8) ;
+    dwt_config->stsMode = DWT_STS_MODE_OFF;
+    dwt_config->stsLength = DWT_STS_LEN_64;
+    dwt_config->pdoaMode = DWT_PDOA_M1;
+
+
+  /* Configure DW IC. See NOTE 6 below. */
+  if(dwt_configure(dwt_config)) // if the dwt_configure returns DWT_ERROR either the PLL or RX calibration has failed the host should reset the device
+  {
+    UART_puts("CONFIG FAILED\r\n");
+    while (1) ;
+  }
+
+  /* Configure the TX spectrum parameters (power, PG delay and PG count) */
+  dwt_configuretxrf(&txconfig_options);
+
+  /* Apply default antenna delay value. See NOTE 2 below. */
+  dwt_setrxantennadelay(RX_ANT_DLY);
+  dwt_settxantennadelay(TX_ANT_DLY);
+
+  dwt_enablespicrccheck(DWT_SPI_CRC_MODE_NO, spi_rd_err_cb);
+  dwt_setrxaftertxdelay(POLL_TX_TO_RESP_RX_DLY_UUS);
+  dwt_setrxtimeout(RESP_RX_TIMEOUT_UUS);
+
+
+  tx_poll_msg[ALL_MSG_SN_IDX] = frame_seq_nb;
+  dwt_write32bitreg(SYS_STATUS_ID, SYS_STATUS_TXFRS_BIT_MASK);
+  dwt_writetxdata(sizeof(tx_poll_msg), tx_poll_msg, 0); /* Zero offset in TX buffer. */
+  dwt_writetxfctrl(sizeof(tx_poll_msg), 0, 1); /* Zero offset in TX buffer, ranging. */
+
+  /* Start transmission, indicating that a response is expected so that reception is enabled automatically after the frame is sent and the delay
+    * set by dwt_setrxaftertxdelay() has elapsed. */
+  dwt_starttx(DWT_START_TX_IMMEDIATE | DWT_RESPONSE_EXPECTED);
+
+  /* We assume that the transmission is achieved correctly, poll for reception of a frame or error/timeout. See NOTE 8 below. */
+  while (!((status_reg = dwt_read32bitreg(SYS_STATUS_ID)) & (SYS_STATUS_RXFCG_BIT_MASK | SYS_STATUS_ALL_RX_TO | SYS_STATUS_ALL_RX_ERR)))
+  { 
+    Serial.println("I am stuck here again");
+    print_binary(status_reg);
+    break;
+  };
+
+  /* Increment frame sequence number after transmission of the poll message (modulo 256). */
+  frame_seq_nb++;
+
+  if (status_reg & SYS_STATUS_RXFCG_BIT_MASK)
+  {
+      uint32_t frame_len;
+
+      /* Clear good RX frame event in the DW IC status register. */
+      dwt_write32bitreg(SYS_STATUS_ID, SYS_STATUS_RXFCG_BIT_MASK);
+
+      /* A frame has been received, read it into the local buffer. */
+      frame_len = dwt_read32bitreg(RX_FINFO_ID) & RXFLEN_MASK;
+      if (frame_len <= sizeof(rx_buffer))
+      {
+          dwt_readrxdata(rx_buffer, frame_len, 0);
+
+          /* Check that the frame is the expected response from the companion "SS TWR responder" example.
+            * As the sequence number field of the frame is not relevant, it is cleared to simplify the validation of the frame. */
+          rx_buffer[ALL_MSG_SN_IDX] = 0;
+          if (memcmp(rx_buffer, rx_resp_msg, ALL_MSG_COMMON_LEN) == 0)
+          {
+              uint32_t poll_tx_ts, resp_rx_ts, poll_rx_ts, resp_tx_ts;
+              int32_t rtd_init, rtd_resp;
+              float clockOffsetRatio ;
+
+              /* Retrieve poll transmission and response reception timestamps. See NOTE 9 below. */
+              poll_tx_ts = dwt_readtxtimestamplo32();
+              resp_rx_ts = dwt_readrxtimestamplo32();
+
+              /* Read carrier integrator value and calculate clock offset ratio. See NOTE 11 below. */
+              clockOffsetRatio = ((float)dwt_readclockoffset()) / (uint32_t)(1<<26);
+
+              /* Get timestamps embedded in response message. */
+              resp_msg_get_ts(&rx_buffer[RESP_MSG_POLL_RX_TS_IDX], &poll_rx_ts);
+              resp_msg_get_ts(&rx_buffer[RESP_MSG_RESP_TX_TS_IDX], &resp_tx_ts);
+
+              /* Compute time of flight and distance, using clock offset ratio to correct for differing local and remote clock rates */
+              rtd_init = resp_rx_ts - poll_tx_ts;
+              rtd_resp = resp_tx_ts - poll_rx_ts;
+
+              tof = ((rtd_init - rtd_resp * (1 - clockOffsetRatio)) / 2.0) * DWT_TIME_UNITS;
+              distance = tof * SPEED_OF_LIGHT;
+
+              /* Display computed distance on LCD. */
+              snprintf(dist_str, sizeof(dist_str), "DIST: %3.2f m", distance);
+              test_run_info((unsigned char *)dist_str);
+          }
+      }
+  }
+  else
+  {
+      /* Clear RX error/timeout events in the DW IC status register. */
+      dwt_write32bitreg(SYS_STATUS_ID, SYS_STATUS_ALL_RX_TO | SYS_STATUS_ALL_RX_ERR);
+  }
+
 }
 
 /*
@@ -263,6 +454,14 @@ static void send_ack_uwb_started(void)
       send_ble_data(buffer, 1);
 }
 
+static void send_ack_uwb_stopped(void)
+{
+    uint8_t buffer[1];
+    ni_packet_t * packet = (ni_packet_t *)buffer;
+    packet->message_id = (uint8_t)MessageId_accessoryUwbDidStop;
+    send_ble_data(buffer, 1);
+}
+
 void onDataWritten(uint16_t conn_hdl, BLECharacteristic* chr, uint8_t* data, uint16_t len) {
   // This callback function is called when data is written to the characteristic
   
@@ -278,16 +477,13 @@ void onDataWritten(uint16_t conn_hdl, BLECharacteristic* chr, uint8_t* data, uin
   // // Send a response back
   // String txData = "Data received: " + rxData;
   // myTxChar.notify(txData.c_str(), txData.length());
-  Serial.println("Hello");
   ni_packet_t * packet = (ni_packet_t *)data;
   switch (packet->message_id) {
     case MessageId_init: {
-      Serial.println("Requesting Data");
       send_accessory_config_data();
       break;
     }
     case MessageId_configure_and_start: {
-      Serial.println("Configure and start");
       int ret;
       ret = niq_configure_and_start_uwb(packet->payload, len-1, (void*)&fira_config);
 
@@ -300,10 +496,17 @@ void onDataWritten(uint16_t conn_hdl, BLECharacteristic* chr, uint8_t* data, uin
             Serial.println("Protocol version not supported");
             break;
       default:
-          send_ack_uwb_started();
-          break;
+        Serial.println("UWB STARTED");
+        send_ack_uwb_started();
+        break;
       }
 
+      break;
+    }
+    case MessageId_stop: {
+      // Stop accessory UWB and reset state
+      niq_stop_uwb();
+      send_ack_uwb_stopped();
       break;
     }
     default: {
@@ -330,9 +533,29 @@ void setup() {
   spiBegin(2, 1);
   spiSelect(0);
 
+  delay(5); 
+
+  // while (!dwt_checkidlerc()) // Need to make sure DW IC is in IDLE_RC before proceeding 
+  // {
+  //   Serial.println("IDLE FAILED\r\n");
+  //   while (1) ;
+  // }
+
+  if (dwt_initialise(DWT_DW_INIT) == DWT_ERROR)
+  {
+    Serial.println("INIT FAILED\r\n");
+    while (1) ;
+  }
+
   // Initialize UWB and Bluefruit
   niq_init(ResumeUwbTasks, StopUwbTask, nrf_crypto_init_wrapper, nrf_crypto_uninit_wrapper, nrf_crypto_rng_vector_generate_wrapper);
   niq_set_ranging_role(0);
+
+  // if (dwt_check_dev_id() == DWT_SUCCESS) {
+  //   Serial.println("DEV ID OK\n");
+  // } else {
+  //   Serial.println("DEV ID FAILED\n");
+  // }
 
   Bluefruit.configPrphBandwidth(BANDWIDTH_MAX);
   Bluefruit.begin(1,0);
@@ -351,11 +574,11 @@ void setup() {
   // accessory_config_data_length += ACCESSORY_CONFIGURATION_DATA_FIX_LEN;
 
   // // Initialize the second service and characteristic
-  // ANIService.begin();
-  // ACD.setPermission(SECMODE_OPEN, SECMODE_OPEN);
-  // // ACD.setFixedLen(accessory_config_data_length);
-  // // ACD.setBuffer(accessory_config_data_buffer, (uint16_t)accessory_config_data_length);
-  // ACD.begin();
+  ANIService.begin();
+  ACD.setPermission(SECMODE_OPEN, SECMODE_OPEN);
+  ACD.setFixedLen(accessory_config_data_length);
+  ACD.setBuffer(accessory_config_data_buffer, (uint16_t)accessory_config_data_length);
+  ACD.begin();
   // ACD.setWriteCallback(onDataWritten);
 
   // Start advertising
@@ -378,11 +601,5 @@ void setup() {
 }
 
 void loop() {
-  // if (dwt_check_dev_id() == DWT_SUCCESS) {
-  //   Serial.println("DEV ID OK\n");
-  // } else {
-  //   Serial.println("DEV ID FAILED\n");
-  // }
-  // delay(10000);
 }
 
