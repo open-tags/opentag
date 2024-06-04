@@ -15,7 +15,7 @@ extern "C" {
 #define SPI_MISO 9
 #define SPI_SCK 8
 #define SPI_CS 0
-#define RST 1 
+#define RST 1
 #define IRQ 2
 
 #define TX_ANT_DLY 16385
@@ -44,6 +44,7 @@ static uint8_t rx_buffer[RX_BUF_LEN];
 
 /* Hold copy of status register state here for reference so that it can be examined at a debug breakpoint. */
 static uint32_t status_reg = 0;
+volatile static uint8_t start_uwb = 0;
 
 /* Delay between frames, in UWB microseconds. See NOTE 1 below. */
 #ifdef RPI_BUILD
@@ -63,11 +64,13 @@ static uint32_t status_reg = 0;
 #define RESP_RX_TIMEOUT_UUS 210
 #endif //STM32F429xx
 #ifdef NRF52840_XXAA
-#define RESP_RX_TIMEOUT_UUS 400
+#define RESP_RX_TIMEOUT_UUS 100
 #endif //NRF52840_XXAA
 
 #define POLL_TX_TO_RESP_RX_DLY_UUS 240
 #define RESP_RX_TIMEOUT_UUS 0
+
+dwt_config_t * dwt_config;
 
 
 /* Hold copies of computed time of flight and distance here for reference so that it can be examined at a debug breakpoint. */
@@ -86,18 +89,15 @@ static uint8_t accessory_config_data_buffer[sizeof(struct AccessoryConfiguration
 static uint8_t accessory_config_data_length;
 
 fira_device_configure_t fira_config;
-dwt_config_t * dwt_config;
 extern dwt_txconfig_t txconfig_options;
 
 // BLE Characteristic for Tx
 BLECharacteristic myTxChar("6E400002-B5A3-F393-E0A9-E50E24DCCA9E", BLEWrite | BLENotify | BLEIndicate, 38, true);
-BLECharacteristic myRxChar("6E400002-B5A3-F393-E0A9-E50E24DCCA9E", BLERead);
+BLECharacteristic myRxChar("6E400003-B5A3-F393-E0A9-E50E24DCCA9E", BLERead);
 
 BLECharacteristic ACD("95e8d9d5-d8ef-4721-9a4e-807375f53328", BLERead);
 
 void onDataWritten(uint16_t conn_hdl, BLECharacteristic* chr, uint8_t* data, uint16_t len);
-
-volatile uint8_t start_TWR = 0;
 
 static void send_ble_data(uint8_t * buffer, uint16_t data_len){
   bool success = myTxChar.notify(buffer, data_len);
@@ -107,25 +107,6 @@ static void send_ble_data(uint8_t * buffer, uint16_t data_len){
     Serial.println("Failed to send data");
   }
 }
-
-// void send_ble_data(uint8_t* buffer, uint16_t data_len) {
-//     bool success = true;
-//     uint16_t offset = 0;
-
-//     while (offset < data_len) {
-//         uint16_t chunk_len = min(20, data_len - offset);
-//         bool chunk_success = myTxChar.notify(buffer + offset, chunk_len);
-//         if (!chunk_success) {
-//             success = false;
-//             break;
-//         }
-//         offset += chunk_len;
-//         delay(10); // Small delay to ensure BLE stack has time to process
-//     }
-
-//     return;
-// }
-
 
 void print_buffer_binary(uint8_t* buffer, size_t length) {
     for (size_t i = 0; i < length; ++i) {
@@ -151,6 +132,7 @@ void print_binary(uint32_t value) {
 
 static void send_accessory_config_data() {
 
+    Serial.println("Sending Config data for the first time");
     niq_reinit();
 
     // The Accessory Configuration Data in intended to be constructed by the embedded application.
@@ -225,71 +207,33 @@ static void send_accessory_config_data() {
     //     print_buffer_binary(&config->uwbConfigData[i], 1);
     // }
     
-    if (accessory_config_data_length <= sizeof(accessory_config_data_buffer))
-    {
-      memcpy(accessory_config_data_buffer, packet -> payload, accessory_config_data_length);
-    }
-    ACD.setBuffer(accessory_config_data_buffer, (uint16_t)accessory_config_data_length);
+    // if (accessory_config_data_length <= sizeof(accessory_config_data_buffer))
+    // {
+    //   memcpy(accessory_config_data_buffer, packet -> payload, accessory_config_data_length);
+    // }
+    // ACD.setBuffer(accessory_config_data_buffer, (uint16_t)accessory_config_data_length);
 
     send_ble_data(buffer, (uint16_t)(config->uwbConfigDataLength + ACCESSORY_CONFIGURATION_DATA_FIX_LEN + 1));
+    memset(buffer, 0, sizeof(struct AccessoryConfigurationData)+1);
 }
 
 void spi_rd_err_cb(){
   Serial.print("Bruhhh");
 }
 
-/*
- * @brief callback used for niq lib to signal session start
- */
-void ResumeUwbTasks(void)
+static void send_ack_uwb_started(void)
 {
-    // Serial.println("Started");
-    // Serial.print("Role");
-    // Serial.println(fira_config.role);
-    // Serial.print("Channel Number");
-    // Serial.println(fira_config.Channel_Number);
-    // Serial.print("PreAmble");
-    // Serial.println(fira_config.Preamble_Code);
-    // Serial.print("Sfd");
-    // Serial.println(fira_config.SP0_PHY_Set);
-
-    uint8_t sfd_id = (fira_config.SP0_PHY_Set == 2)?(2):(0);
-    dwt_config->chan = fira_config.Channel_Number;
-    dwt_config->sfdType = (sfd_id == 0) ? DWT_SFD_IEEE_4A : DWT_SFD_IEEE_4Z; //TBD: maybe_flawed?
-    dwt_config->txCode = fira_config.Preamble_Code;
-    dwt_config->rxCode = fira_config.Preamble_Code;
-    dwt_config->txPreambLength = DWT_PLEN_64;
-    dwt_config->rxPAC = DWT_PAC8;
-    dwt_config->dataRate = DWT_BR_6M8;
-    dwt_config->phrMode = DWT_PHRMODE_STD;
-    dwt_config->phrRate = DWT_PHRRATE_STD;
-    dwt_config->sfdTO = (69  + 8 - 8) ;
-    dwt_config->stsMode = DWT_STS_MODE_OFF;
-    dwt_config->stsLength = DWT_STS_LEN_64;
-    dwt_config->pdoaMode = DWT_PDOA_M1;
+      // Send "UWB did start" BLE message to the app
+      Serial.println("Sending Acknowledgement");
+      uint8_t buffer[1] = {2};
+      send_ble_data(buffer, 1);
+}
 
 
-  /* Configure DW IC. See NOTE 6 below. */
-  if(dwt_configure(dwt_config)) // if the dwt_configure returns DWT_ERROR either the PLL or RX calibration has failed the host should reset the device
-  {
-    UART_puts("CONFIG FAILED\r\n");
-    while (1) ;
-  }
 
-  /* Configure the TX spectrum parameters (power, PG delay and PG count) */
-  dwt_configuretxrf(&txconfig_options);
+void start(){
 
-  /* Apply default antenna delay value. See NOTE 2 below. */
-  dwt_setrxantennadelay(RX_ANT_DLY);
-  dwt_settxantennadelay(TX_ANT_DLY);
-
-  dwt_enablespicrccheck(DWT_SPI_CRC_MODE_NO, spi_rd_err_cb);
-
-  // TODO: Replace code after this to switch is with Tx/Rx
-  // Don't change other shit pls
-  dwt_setrxaftertxdelay(POLL_TX_TO_RESP_RX_DLY_UUS);
-  dwt_setrxtimeout(RESP_RX_TIMEOUT_UUS);
-
+  Serial.println("Entered Started");
 
   tx_poll_msg[ALL_MSG_SN_IDX] = frame_seq_nb;
   dwt_write32bitreg(SYS_STATUS_ID, SYS_STATUS_TXFRS_BIT_MASK);
@@ -303,11 +247,12 @@ void ResumeUwbTasks(void)
   /* We assume that the transmission is achieved correctly, poll for reception of a frame or error/timeout. See NOTE 8 below. */
   while (!((status_reg = dwt_read32bitreg(SYS_STATUS_ID)) & (SYS_STATUS_RXFCG_BIT_MASK | SYS_STATUS_ALL_RX_TO | SYS_STATUS_ALL_RX_ERR)))
   { 
-    Serial.println("I am stuck here again");
-    print_binary(status_reg);
-    break;
+    // Serial.println("I am stuck here again");
+    // print_binary(status_reg);
+    // break;
   };
 
+  Serial.println("receive frame");
   /* Increment frame sequence number after transmission of the poll message (modulo 256). */
   frame_seq_nb++;
 
@@ -360,10 +305,45 @@ void ResumeUwbTasks(void)
   else
   {
       /* Clear RX error/timeout events in the DW IC status register. */
+      Serial.println("This shit errored out mf");
+      Serial.print("ERROR: ");
+      print_binary(status_reg);
       dwt_write32bitreg(SYS_STATUS_ID, SYS_STATUS_ALL_RX_TO | SYS_STATUS_ALL_RX_ERR);
   }
-
 }
+
+/*
+ * @brief callback used for niq lib to signal session start
+ */
+void ResumeUwbTasks(void)
+{
+    // Serial.println("Started");
+    // Serial.print("Role");
+    // Serial.println(fira_config.role);
+    // Serial.print("Channel Number");
+    // Serial.println(fira_config.Channel_Number);
+    // Serial.print("PreAmble");
+    // Serial.println(fira_config.Preamble_Code);
+    // Serial.print("Sfd");
+    // Serial.println(fira_config.SP0_PHY_Set);
+    //send_ack_uwb_started();
+    // uint8_t sfd_id = (fira_config.SP0_PHY_Set == 2)?(2):(0);
+    // dwt_config->chan = fira_config.Channel_Number;
+    // dwt_config->sfdType = (sfd_id == 0) ? DWT_SFD_IEEE_4A : DWT_SFD_IEEE_4Z; //TBD: maybe_flawed?
+    // dwt_config->txCode = fira_config.Preamble_Code;
+    // dwt_config->rxCode = fira_config.Preamble_Code;
+    // dwt_config->txPreambLength = DWT_PLEN_64;
+    // dwt_config->rxPAC = DWT_PAC8;
+    // dwt_config->dataRate = DWT_BR_6M8;
+    // dwt_config->phrMode = DWT_PHRMODE_STD;
+    // dwt_config->phrRate = DWT_PHRRATE_STD;
+    // dwt_config->sfdTO = (69  + 8 - 8) ;
+    // dwt_config->stsMode = DWT_STS_MODE_OFF;
+    // dwt_config->stsLength = DWT_STS_LEN_64;
+    // dwt_config->pdoaMode = DWT_PDOA_M1;
+    start_uwb = 1;
+}
+
 
 /*
  * @brief callback used for niq lib to signal session stop
@@ -448,14 +428,7 @@ void disconnect_callback(uint16_t conn_handle, uint8_t reason)
   Serial.println(reason, HEX);
 }
 
-static void send_ack_uwb_started(void)
-{
-      // Send "UWB did start" BLE message to the app
-      uint8_t buffer[1];
-      ni_packet_t * packet = (ni_packet_t *)buffer;
-      packet->message_id = (uint8_t)MessageId_accessoryUwbDidStart;
-      send_ble_data(buffer, 1);
-}
+
 
 static void send_ack_uwb_stopped(void)
 {
@@ -466,20 +439,6 @@ static void send_ack_uwb_stopped(void)
 }
 
 void onDataWritten(uint16_t conn_hdl, BLECharacteristic* chr, uint8_t* data, uint16_t len) {
-  // This callback function is called when data is written to the characteristic
-  
-  // Convert the received data to a string
-  // String rxData = "";
-  // for (int i = 0; i < len; i++) {
-  //   rxData += (char)data[i];
-  // }
-  
-  // Serial.print("Received data: ");
-  // Serial.println(rxData);
-
-  // // Send a response back
-  // String txData = "Data received: " + rxData;
-  // myTxChar.notify(txData.c_str(), txData.length());
   ni_packet_t * packet = (ni_packet_t *)data;
   switch (packet->message_id) {
     case MessageId_init: {
@@ -493,14 +452,15 @@ void onDataWritten(uint16_t conn_hdl, BLECharacteristic* chr, uint8_t* data, uin
       switch(ret)
       {
       case -E_NIQ_INPVAL:
-            Serial.println("Data len wrong");
+            Serial.println("ERROR: Data len wrong");
             break;
       case -E_NIQ_VERSIONNOTSUPPORTED:
-            Serial.println("Protocol version not supported");
+            Serial.println("ERROR: Protocol version not supported");
             break;
       default:
-        Serial.println("UWB STARTED");
+        //Serial.println("UWB STARTED");
         send_ack_uwb_started();
+        Serial.println("TWR Started");
         break;
       }
 
@@ -533,10 +493,27 @@ void setup() {
   pinMode(SPI_CS, OUTPUT);
   pinMode(IRQ, INPUT_PULLUP);
   attachInterrupt(digitalPinToInterrupt(IRQ), dwt_isr, RISING);
-  spiBegin(2, 1);
-  spiSelect(0);
+  spiBegin(IRQ, RST);
+  spiSelect(SPI_CS);
 
-  delay(5); 
+
+
+
+  uint8_t sfd_id = 2;
+  dwt_config->chan = 9;
+  dwt_config->sfdType = (sfd_id == 0) ? DWT_SFD_IEEE_4A : DWT_SFD_IEEE_4Z; //TBD: maybe_flawed?
+  //dwt_config->sfdType = 2;
+  dwt_config->txCode = 11;
+  dwt_config->rxCode = 11;
+  dwt_config->txPreambLength = DWT_PLEN_64;
+  dwt_config->rxPAC = DWT_PAC8;
+  dwt_config->dataRate = DWT_BR_6M8;
+  dwt_config->phrMode = DWT_PHRMODE_STD;
+  dwt_config->phrRate = DWT_PHRRATE_STD;
+  dwt_config->sfdTO = (65  + 8 - 8) ;
+  dwt_config->stsMode = DWT_STS_MODE_OFF;
+  dwt_config->stsLength = DWT_STS_LEN_64;
+  dwt_config->pdoaMode = DWT_PDOA_M0;
 
   // while (!dwt_checkidlerc()) // Need to make sure DW IC is in IDLE_RC before proceeding 
   // {
@@ -544,21 +521,40 @@ void setup() {
   //   while (1) ;
   // }
 
-  if (dwt_initialise(DWT_DW_INIT) == DWT_ERROR)
+  dwt_setleds(DWT_LEDS_ENABLE | DWT_LEDS_INIT_BLINK);
+
+  if (dwt_initialise(DWT_DW_IDLE_RC) == DWT_ERROR)
   {
     Serial.println("INIT FAILED\r\n");
     while (1) ;
   }
 
+    /* Configure DW IC. See NOTE 6 below. */
+  if(dwt_configure(dwt_config)) // if the dwt_configure returns DWT_ERROR either the PLL or RX calibration has failed the host should reset the device
+  {
+    UART_puts("CONFIG FAILED\r\n");
+    while (1) ;
+  }
+
+    /* Configure the TX spectrum parameters (power, PG delay and PG count) */
+  dwt_configuretxrf(&txconfig_options);
+
+  /* Apply default antenna delay value. See NOTE 2 below. */
+  dwt_setrxantennadelay(RX_ANT_DLY);
+  dwt_settxantennadelay(TX_ANT_DLY);
+
+  dwt_enablespicrccheck(DWT_SPI_CRC_MODE_NO, spi_rd_err_cb);
+
+  // TODO: Replace code after this to switch is with Tx/Rx
+  // Don't change other shit pls
+  dwt_setrxaftertxdelay(POLL_TX_TO_RESP_RX_DLY_UUS);
+  dwt_setrxtimeout(RESP_RX_TIMEOUT_UUS);
+  dwt_setlnapamode(DWT_LNA_ENABLE | DWT_PA_ENABLE);
+
   // Initialize UWB and Bluefruit
   niq_init(ResumeUwbTasks, StopUwbTask, nrf_crypto_init_wrapper, nrf_crypto_uninit_wrapper, nrf_crypto_rng_vector_generate_wrapper);
-  niq_set_ranging_role(0);
-
-  // if (dwt_check_dev_id() == DWT_SUCCESS) {
-  //   Serial.println("DEV ID OK\n");
-  // } else {
-  //   Serial.println("DEV ID FAILED\n");
-  // }
+  niq_set_ranging_role(1);
+ 
 
   Bluefruit.configPrphBandwidth(BANDWIDTH_MAX);
   Bluefruit.begin(1,0);
@@ -604,5 +600,10 @@ void setup() {
 }
 
 void loop() {
+
+  while (!start_uwb){}
+  Serial.println("Exited out of volatile while loop");
+  start();
+
 }
 
