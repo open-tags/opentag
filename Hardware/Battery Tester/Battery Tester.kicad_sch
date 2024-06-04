@@ -2333,6 +2333,24 @@
 		)
 		(uuid "45726a83-b6dc-4569-9d13-79652a358e67")
 	)
+	(bus_entry
+		(at 102.87 21.59)
+		(size 2.54 2.54)
+		(stroke
+			(width 0)
+			(type default)
+		)
+		(uuid "9644cf3e-4a1c-4f1b-982d-5e0ef15de2b8")
+	)
+	(bus_entry
+		(at 102.87 20.32)
+		(size 2.54 2.54)
+		(stroke
+			(width 0)
+			(type default)
+		)
+		(uuid "ef849565-5b7c-46e2-b576-62b3e17d739b")
+	)
 	(wire
 		(pts
 			(xy 102.87 50.8) (xy 102.87 38.1)
@@ -5022,7 +5040,7 @@
 				(justify left)
 			)
 		)
-		(property "Value" "2k"
+		(property "Value" "2.5k"
 			(at 114.3 48.2599 0)
 			(effects
 				(font
