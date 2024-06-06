@@ -11,9 +11,12 @@
 		012C306D226FD13B00BADEF9 /* Main.storyboard in Resources */ = {isa = PBXBuildFile; fileRef = 012C306B226FD13B00BADEF9 /* Main.storyboard */; };
 		012C306F226FD13B00BADEF9 /* Assets.xcassets in Resources */ = {isa = PBXBuildFile; fileRef = 012C306E226FD13B00BADEF9 /* Assets.xcassets */; };
 		012C3072226FD13B00BADEF9 /* LaunchScreen.storyboard in Resources */ = {isa = PBXBuildFile; fileRef = 012C3070226FD13B00BADEF9 /* LaunchScreen.storyboard */; };
+		051844D62C10417A0001871A /* WorldView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 051844D52C10417A0001871A /* WorldView.swift */; };
+		051844D92C1044A10001871A /* ARKit.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 051844D32C10384D0001871A /* ARKit.framework */; };
+		051844DC2C1044A20001871A /* CoreBluetooth.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 3A5E198A2606CE5000837A4A /* CoreBluetooth.framework */; };
+		051844DE2C1044A30001871A /* NearbyInteraction.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 3A5E19882606CE4B00837A4A /* NearbyInteraction.framework */; };
+		051844E02C1044A40001871A /* RealityKit.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 051844D72C10448E0001871A /* RealityKit.framework */; };
 		3A5E19872606CD0000837A4A /* AccessoryDemoViewController.swift in Sources */ = {isa = PBXBuildFile; fileRef = 3A5E19862606CD0000837A4A /* AccessoryDemoViewController.swift */; };
-		3A5E19892606CE4B00837A4A /* NearbyInteraction.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 3A5E19882606CE4B00837A4A /* NearbyInteraction.framework */; };
-		3A5E198B2606CE5000837A4A /* CoreBluetooth.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 3A5E198A2606CE5000837A4A /* CoreBluetooth.framework */; };
 		3AB619FE2606C487005014A2 /* BluetoothLECentral.swift in Sources */ = {isa = PBXBuildFile; fileRef = 3AB619FD2606C487005014A2 /* BluetoothLECentral.swift */; };
 		A9A7C756227E1D6200F2CC59 /* README.md in Resources */ = {isa = PBXBuildFile; fileRef = A9A7C755227E1D6200F2CC59 /* README.md */; };
 /* End PBXBuildFile section */
@@ -25,6 +28,9 @@
 		012C306E226FD13B00BADEF9 /* Assets.xcassets */ = {isa = PBXFileReference; lastKnownFileType = folder.assetcatalog; path = Assets.xcassets; sourceTree = "<group>"; };
 		012C3071226FD13B00BADEF9 /* Base */ = {isa = PBXFileReference; lastKnownFileType = file.storyboard; name = Base; path = Base.lproj/LaunchScreen.storyboard; sourceTree = "<group>"; };
 		012C3073226FD13B00BADEF9 /* Info.plist */ = {isa = PBXFileReference; lastKnownFileType = text.plist.xml; path = Info.plist; sourceTree = "<group>"; };
+		051844D32C10384D0001871A /* ARKit.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = ARKit.framework; path = System/Library/Frameworks/ARKit.framework; sourceTree = SDKROOT; };
+		051844D52C10417A0001871A /* WorldView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = WorldView.swift; sourceTree = "<group>"; };
+		051844D72C10448E0001871A /* RealityKit.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = RealityKit.framework; path = System/Library/Frameworks/RealityKit.framework; sourceTree = SDKROOT; };
 		3A5E19862606CD0000837A4A /* AccessoryDemoViewController.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = AccessoryDemoViewController.swift; sourceTree = "<group>"; };
 		3A5E19882606CE4B00837A4A /* NearbyInteraction.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = NearbyInteraction.framework; path = Platforms/iPhoneOS.platform/Developer/SDKs/iPhoneOS15.0.Internal.sdk/System/Library/Frameworks/NearbyInteraction.framework; sourceTree = DEVELOPER_DIR; };
 		3A5E198A2606CE5000837A4A /* CoreBluetooth.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = CoreBluetooth.framework; path = Platforms/iPhoneOS.platform/Developer/SDKs/iPhoneOS15.0.Internal.sdk/System/Library/Frameworks/CoreBluetooth.framework; sourceTree = DEVELOPER_DIR; };
@@ -39,8 +45,10 @@
 			isa = PBXFrameworksBuildPhase;
 			buildActionMask = 2147483647;
 			files = (
-				3A5E198B2606CE5000837A4A /* CoreBluetooth.framework in Frameworks */,
-				3A5E19892606CE4B00837A4A /* NearbyInteraction.framework in Frameworks */,
+				051844DE2C1044A30001871A /* NearbyInteraction.framework in Frameworks */,
+				051844D92C1044A10001871A /* ARKit.framework in Frameworks */,
+				051844E02C1044A40001871A /* RealityKit.framework in Frameworks */,
+				051844DC2C1044A20001871A /* CoreBluetooth.framework in Frameworks */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
@@ -78,6 +86,7 @@
 				012C306E226FD13B00BADEF9 /* Assets.xcassets */,
 				012C3070226FD13B00BADEF9 /* LaunchScreen.storyboard */,
 				012C3073226FD13B00BADEF9 /* Info.plist */,
+				051844D52C10417A0001871A /* WorldView.swift */,
 			);
 			path = OpenTags;
 			sourceTree = "<group>";
@@ -109,6 +118,8 @@
 		A9FCEFA62293634C008CC0CF /* Frameworks */ = {
 			isa = PBXGroup;
 			children = (
+				051844D72C10448E0001871A /* RealityKit.framework */,
+				051844D32C10384D0001871A /* ARKit.framework */,
 				3A5E198A2606CE5000837A4A /* CoreBluetooth.framework */,
 				3A5E19882606CE4B00837A4A /* NearbyInteraction.framework */,
 			);
@@ -196,6 +207,7 @@
 			buildActionMask = 2147483647;
 			files = (
 				3AB619FE2606C487005014A2 /* BluetoothLECentral.swift in Sources */,
+				051844D62C10417A0001871A /* WorldView.swift in Sources */,
 				3A5E19872606CD0000837A4A /* AccessoryDemoViewController.swift in Sources */,
 				012C3068226FD13B00BADEF9 /* AppDelegate.swift in Sources */,
 			);

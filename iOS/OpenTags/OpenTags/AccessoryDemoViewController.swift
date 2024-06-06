@@ -6,6 +6,7 @@ A view controller that facilitates the Nearby Interaction Accessory user experie
 */
 
 import UIKit
+import ARKit
 import NearbyInteraction
 import os.log
 
@@ -34,12 +35,15 @@ class AccessoryDemoViewController: UIViewController {
     var accessoryMap = [NIDiscoveryToken: String]()
 
     let logger = os.Logger(subsystem: "com.example.apple-samplecode.NINearbyAccessorySample", category: "AccessoryDemoViewController")
+    
+    //let worldView = WorldView(frame: .zero)
 
     @IBOutlet weak var connectionStateLabel: UILabel!
     @IBOutlet weak var uwbStateLabel: UILabel!
     @IBOutlet weak var infoLabel: UILabel!
     @IBOutlet weak var distanceLabel: UILabel!
     @IBOutlet weak var actionButton: UIButton!
+    //@IBOutlet weak var SwitchAR: UIButton!
     
     override func viewDidLoad() {
         super.viewDidLoad()
@@ -54,6 +58,7 @@ class AccessoryDemoViewController: UIViewController {
         dataChannel.start()
         
         updateInfoLabel(with: "Scanning for accessories")
+            
     }
     
     @IBAction func buttonAction(_ sender: Any) {
@@ -61,6 +66,19 @@ class AccessoryDemoViewController: UIViewController {
         let msg = Data([MessageId.initialize.rawValue])
         sendDataToAccessory(msg)
     }
+    
+//    @IBAction func switchARButtonTapped(_ sender: UIButton) {
+//        if worldView.isHidden {
+//            UIView.animate(withDuration: 0.4) {
+//                self.worldView.isHidden = false
+//            }
+//        }
+//        else {
+//            UIView.animate(withDuration: 0.4) {
+//                self.worldView.isHidden = true
+//            }
+//        }
+//    }
     
     // MARK: - Data channel methods
     
