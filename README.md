@@ -1,7 +1,9 @@
 # Opentags
-![opentags_intro.gif](opentags_intro.gif)
+![](./opentags_render.webp)
 
 Opentags is an open-source alternative to Apple's AirTags, providing a customizable and privacy-focused solution for tracking and locating your belongings using Ultra-Wideband (UWB) technology.
+
+> Note: this is an archived R&D version that does not share the same hardware or software as the [opentag one](https://open-tags.com/one/)
 
 ## Features
 
@@ -15,25 +17,13 @@ Opentags is an open-source alternative to Apple's AirTags, providing a customiza
 
 ### Prerequisites
 
-You can either order your own [Opentags hardware here](https://buy.stripe.com/8wM6oCcYg4fP6ly144)  or build your own using the provided schematics and firmware. 
+You can build your own using the provided schematics and firmware. 
 
 To get started, you will need the following:
 - Opentags hardware
 - USB-C cable for flashing firmware
 - Computer to flash firmware
 - iOS device to use the Opentags app
-
-### Hardware
-
-We provide extensive documentation on our hardware [here](https://open-tags.github.io/docs/hardware/). 
-
-### Firmware
-
-For detailed documentation and guides, please refer to our [documentation](https://open-tags.github.io/docs/firmware/).
-
-### iOS App
-
-For detailed documentation and guides, please refer to our [documentation](https://open-tags.github.io/docs/ios/).
 
 ## Contributing
 
@@ -55,6 +45,6 @@ Opentags is released under the MIT License. This means that you are free to use,
 
 ## Contact
 
-If you have any questions, suggestions, or issues, please join our : [Discord server](https://discord.com/invite/HYT2UBpeHM)
+If you have any questions, suggestions, or issues, please email [hello@open-tags.com](mailto:hello@open-tags.com). 
 
 We appreciate your interest in Opentags and look forward to your contributions!
