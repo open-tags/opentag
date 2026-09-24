@@ -7,10 +7,12 @@ Hardware, firmware, and an iOS app from the early opentags research project.
 [Hardware](Hardware/) · [Firmware](Firmware/README.md) · [iOS app](iOS/OpenTags/README.md) · [Current ROS 2 source](https://github.com/open-tags/open-tags.github.io/tree/main/ros2)
 
 <p align="center">
-  <img src="opentags_render.webp" alt="Exploded CAD illustration of the early opentag prototype, showing its enclosure, circuit board, and battery" width="320">
+  <img src="assets/opentag-prototype-cad.png" alt="KiCad 3D render of the historical opentag circuit board, showing its routing, mounting holes, connectors, and assigned component models" width="800">
   <br>
-  <sub>Early prototype · exploded CAD illustration</sub>
+  <sub>Historical prototype PCB · rendered directly from the KiCad board and its assigned 3D models</sub>
 </p>
+
+Some components have no assigned 3D model and appear as bare footprints. [Render details](assets/README.md) · [Original exploded CAD view](opentags_render.webp)
 
 ## Explore the prototype
 
