@@ -18,6 +18,3 @@ The Seeed Studio XIAO footprint has no assigned model. The radio footprint uses
 the board's existing DWM1000 model assignment, despite its DWM3000 electrical
 labels. These historical modeling limitations are preserved rather than filled
 in with invented geometry.
-
-The [original exploded illustration](../opentags_render.webp) remains available
-at its original path.

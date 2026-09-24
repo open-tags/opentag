@@ -12,7 +12,7 @@ Hardware, firmware, and an iOS app from the early opentags research project.
   <sub>Historical prototype PCB · rendered directly from the KiCad board and its assigned 3D models</sub>
 </p>
 
-Some components have no assigned 3D model and appear as bare footprints. [Render details](assets/README.md) · [Original exploded CAD view](opentags_render.webp)
+Some components have no assigned 3D model and appear as bare footprints. [Render details](assets/README.md)
 
 ## Explore the prototype
 
