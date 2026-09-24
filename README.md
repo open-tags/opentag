@@ -1,50 +1,43 @@
-# Opentags
-![](./opentags_render.webp)
+# opentag · early UWB prototype
 
-Opentags is an open-source alternative to Apple's AirTags, providing a customizable and privacy-focused solution for tracking and locating your belongings using Ultra-Wideband (UWB) technology.
+Hardware, firmware, and an iOS app from the early opentags research project.
 
-> Note: this is an archived R&D version that does not share the same hardware or software as the [opentag one](https://open-tags.com/one/)
+> **Historical R&D reference.** This prototype predates opentag U1 and uses different hardware and firmware. For current products and setup guides, visit [opentags](https://open-tags.com/) and the [documentation](https://open-tags.com/docs/).
 
-## Features
+[Hardware](Hardware/) · [Firmware](Firmware/README.md) · [iOS app](iOS/OpenTags/README.md) · [Current ROS 2 source](https://github.com/open-tags/open-tags.github.io/tree/main/ros2)
 
-- Open-source design, allowing for customization and transparency
-- Ultra-Wideband (UWB) technology for precise tracking
-- Secure encryption to protect user privacy
-- Compatible with a wide range of devices
-- Easy-to-use mobile app for tracking and managing tags (iOS support available, Android support in development)
+<p align="center">
+  <img src="opentags_render.webp" alt="Exploded CAD illustration of the early opentag prototype, showing its enclosure, circuit board, and battery" width="320">
+  <br>
+  <sub>Early prototype · exploded CAD illustration</sub>
+</p>
 
-## Getting Started
+## Explore the prototype
 
-### Prerequisites
+The project explored ultra-wideband (UWB) ranging and iPhone interaction. These files preserve that development work; they are not a complete, validated product release.
 
-You can build your own using the provided schematics and firmware. 
+| Resource | What is included | Start here |
+| --- | --- | --- |
+| Hardware | KiCad schematics and board layouts, component libraries, BOMs, and fabrication exports | [KiCad project](Hardware/Hardware.kicad_pro) |
+| Firmware | Arduino / PlatformIO experiments and bundled radio libraries | [Build notes and missing dependencies](Firmware/README.md) |
+| iOS | Xcode project based on Apple's Nearby Interaction accessory sample | [iOS setup notes](iOS/OpenTags/README.md) |
 
-To get started, you will need the following:
-- Opentags hardware
-- USB-C cable for flashing firmware
-- Computer to flash firmware
-- iOS device to use the Opentags app
+## Before building
 
-## Contributing
+- **Firmware dependencies are incomplete.** The active PlatformIO target is `xiaoble_adafruit_nrf52`. The source includes `niq.h` and the configuration references NIQ libraries that are not included in this repository. A clean checkout is not ready to build; see the [firmware notes](Firmware/README.md).
+- **The iOS app is experimental.** Its setup notes require an iPhone with Apple's U1 chip and a compatible accessory. Apple's U1 chip is unrelated to the opentag U1 product name.
+- **Hardware files record prototype revisions.** Check the schematic, board revision, and firmware pin assignments together before fabrication or flashing.
 
-We welcome contributions from the community! If you'd like to contribute to Opentags, please follow these steps:
+## Current opentags resources
 
-1. Fork the repository
-2. Create a new branch for your feature or bug fix
-3. Make your changes and commit them with descriptive messages
-4. Push your changes to your forked repository
-5. Submit a pull request to the main repository
+opentags now builds tracking hardware and integration tools for robotics. Start with the [website](https://open-tags.com/) for current products, the [documentation](https://open-tags.com/docs/) for setup, or the [ROS 2 source](https://github.com/open-tags/open-tags.github.io/tree/main/ros2) for robot integration.
 
-Please ensure that your code follows our coding conventions and includes appropriate tests.
+This repository's prototype files and license do not describe the hardware, firmware, or licensing of current products.
 
-We are actively seeking support for the development of an Android app. If you have expertise in this area and would like to contribute, please reach out to us on our Discord server.
+## Questions and corrections
+
+Use [Issues](https://github.com/open-tags/opentag/issues) for questions or corrections about this prototype. Include the board revision, toolchain, and relevant logs when reporting a build problem. For current product inquiries, contact [hello@open-tags.com](mailto:hello@open-tags.com).
 
 ## License
 
-Opentags is released under the MIT License. This means that you are free to use, modify, and distribute the project, both commercially and non-commercially, as long as you include the original copyright notice and permission notice in any copies or substantial portions of the software.
-
-## Contact
-
-If you have any questions, suggestions, or issues, please email [hello@open-tags.com](mailto:hello@open-tags.com). 
-
-We appreciate your interest in Opentags and look forward to your contributions!
+See the repository's [MIT license](LICENSE). Bundled third-party components retain their own license notices, including the [iOS sample](iOS/OpenTags/LICENSE/LICENSE.txt) and [Adafruit nRFCrypto](Firmware/lib/Adafruit_nRFCrypto/LICENSE).
