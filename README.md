@@ -7,9 +7,9 @@ Hardware, firmware, and an iOS app from the early opentags research project.
 [Hardware](Hardware/) · [Firmware](Firmware/README.md) · [iOS app](iOS/OpenTags/README.md) · [Current ROS 2 source](https://github.com/open-tags/open-tags.github.io/tree/main/ros2)
 
 <p align="center">
-  <img src="assets/opentag-prototype-render.png" alt="Studio-style exploded illustration of the early opentag prototype: three screws, light-gray cover, black circuit board, battery, and charcoal enclosure" width="800">
+  <img src="opentags_render.webp" alt="Exploded CAD illustration of the early opentag prototype, showing its enclosure, circuit board, and battery" width="320">
   <br>
-  <sub>Early prototype · AI-assisted illustration based on the original CAD view</sub>
+  <sub>Early prototype · exploded CAD illustration</sub>
 </p>
 
 ## Explore the prototype
