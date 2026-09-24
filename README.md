@@ -14,6 +14,12 @@ Hardware, firmware, and an iOS app from the early opentags research project.
 
 Some components have no assigned 3D model and appear as bare footprints. [Render details](assets/README.md)
 
+<p align="center">
+  <img src="opentags_render.webp" alt="Original exploded CAD view of the early opentag prototype, showing its enclosure, circuit board, battery, and screws" width="480">
+  <br>
+  <sub>Original prototype · exploded CAD view</sub>
+</p>
+
 ## Explore the prototype
 
 The project explored ultra-wideband (UWB) ranging and iPhone interaction. These files preserve that development work; they are not a complete, validated product release.
